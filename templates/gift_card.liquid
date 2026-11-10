@@ -1,10 +1,9 @@
 {% layout none %}
 
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}" {% render 'theme-settings' %}>
   <head>
-    {% # Inlined CSS Variables %}
-    {% render 'css-variables' %}
+    <script src="{{ 'theme-settings.js' | asset_url }}" defer></script>
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
@@ -12,20 +11,13 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
-    {% style %}
-      main {
-        text-align: center;
-      }
-      main img {
-        display: unset;
-      }
-    {% endstyle %}
+    <link rel="stylesheet" href="{{ 'template-gift-card.css' | asset_url }}">
 
     {{ content_for_header }}
   </head>
 
   <body>
-    <main>
+    <main class="gift-card">
       <div class="shopify-section">
         <h1>{{ gift_card.balance | money }}</h1>
 
@@ -42,13 +34,14 @@
 
         <p>
           {% if settings.logo %}
-            {{ settings.logo | image_url: width: 300 | image_tag: alt: shop.name }}
+            {{ settings.logo | image_url: width: 300 | image_tag: alt: shop.name, loading: 'lazy' }}
           {% else %}
             <img
               src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
               alt="{{ 'gift_card.card' | t }}"
               width="300"
               height="200"
+              loading="lazy"
             >
           {% endif %}
         </p>
@@ -64,6 +57,7 @@
               alt="{{ 'gift_card.add_to_apple_wallet' | t }}"
               width="200"
               height="60"
+              loading="lazy"
             >
           </a>
         {% endif %}

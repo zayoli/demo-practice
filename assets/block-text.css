@@ -1,0 +1,12 @@
+.text {
+  text-align: left;
+}
+.text[data-alignment='center'] { text-align: center; }
+.text[data-alignment='right'] { text-align: right; }
+.text--title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.text--subtitle {
+  font-size: 1.5rem;
+}

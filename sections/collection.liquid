@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ 'section-collection.css' | asset_url }}">
+
 {% comment %}
   This section is used in the collection template to render collection page
   listing all products within a collection.
@@ -31,13 +33,6 @@
     {{ paginate | default_pagination }}
   {% endpaginate %}
 </div>
-
-{% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  }
-{% endstylesheet %}
 
 {% schema %}
 {

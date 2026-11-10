@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}" {% render 'theme-settings' %}>
   <head>
     {% render 'meta-tags' %}
-    {% render 'css-variables' %}
+    <script src="{{ 'theme-settings.js' | asset_url }}" defer></script>
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'swiper-bundle.min.js' | asset_url }}" id="SwiperScript" defer></script>

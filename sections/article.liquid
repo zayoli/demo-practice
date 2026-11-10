@@ -7,7 +7,7 @@
 {% endcomment %}
 
 {% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
+  {{ article.image | image_url: width: 1000 | image_tag: loading: 'lazy' }}
 {% endif %}
 
 <h1>{{ article.title }}</h1>

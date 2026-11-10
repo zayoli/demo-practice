@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ 'section-collections.css' | asset_url }}">
+
 {% comment %}
   This section is used in the list-collections template to render a list of
   collections.
@@ -9,7 +11,7 @@
 
 <div
   class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
+  data-grid-gap="{{ section.settings.grid_gap }}"
 >
   {% for collection in collections %}
     <a class="collection-card" href="{{ collection.url }}">
@@ -33,25 +35,6 @@
     </a>
   {% endfor %}
 </div>
-
-{% stylesheet %}
-  .collections {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
-    gap: var(--grid-gap);
-  }
-  .collections--compact {
-    --collection-card-size: 160px;
-  }
-  .collections--full {
-    --collection-card-size: 280px;
-  }
-  .collection-card {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-{% endstylesheet %}
 
 {% schema %}
 {

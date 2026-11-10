@@ -11,38 +11,17 @@
   {% content_for 'block', type: 'group', id: 'group' %}
 {% enddoc %}
 
-<div
+<link rel="stylesheet" href="{{ 'block-group.css' | asset_url }}">
+<script src="{{ 'block-group.js' | asset_url }}" defer></script>
+
+<block-group
   class="group {{ block.settings.layout_direction }}"
-  style="
-    --padding: {{ block.settings.padding }}px;
-    --alignment: {{ block.settings.alignment }};
-  "
+  data-padding="{{ block.settings.padding }}"
+  data-alignment="{{ block.settings.alignment | escape }}"
   {{ block.shopify_attributes }}
 >
   {% content_for 'blocks' %}
-</div>
-
-{% stylesheet %}
-  .group {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    width: 100%;
-  }
-
-  .group--horizontal {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 var(--padding);
-  }
-
-  .group--vertical {
-    flex-direction: column;
-    align-items: var(--alignment);
-    padding: var(--padding) 0;
-  }
-{% endstylesheet %}
+</block-group>
 
 {% schema %}
 {

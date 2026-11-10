@@ -27,6 +27,8 @@
   %}
 {% enddoc %}
 
+<link rel="stylesheet" href="{{ 'component-image.css' | asset_url }}">
+
 {% liquid
   unless height
     assign width = width | default: image.width
@@ -45,20 +47,5 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {{ image | image_url: width: width, height: height, crop: crop | image_tag: loading: 'lazy' }}
 </{{ wrapper }}>
-
-{% stylesheet %}
-  .image {
-    display: block;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: auto;
-  }
-
-  .image > img {
-    width: 100%;
-    height: auto;
-  }
-{% endstylesheet %}

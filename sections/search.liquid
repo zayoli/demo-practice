@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{ 'section-search.css' | asset_url }}">
+
 {% comment %}
   This section is used in the search template to render search results for
   products, articles, and pages.
@@ -49,18 +51,6 @@
     </div>
   {% endif %}
 {% endif %}
-
-{% stylesheet %}
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
-    grid-column: 1 / -1;
-  }
-{% endstylesheet %}
 
 {% schema %}
 {

@@ -5,11 +5,9 @@
   @param {image} [mobile_image] - Optional artwork for small screens.
   @param {string} [example_image] - Bundled example artwork, used without uploaded images.
   @param {string} alt - Accessible description of the artwork.
-  @param {string} loading - The image loading strategy.
-  @param {string} fetch_priority - The image fetch priority.
 
   @example
-  {% render 'slideshow-image', image: block.settings.image, alt: block.settings.alt, loading: 'lazy', fetch_priority: 'auto' %}
+  {% render 'slideshow-image', image: block.settings.image, alt: block.settings.alt %}
 {% enddoc %}
 
 {% liquid
@@ -45,8 +43,7 @@
         class: 'slideshow__image',
         widths: '375, 550, 750, 1100, 1500, 1920, 2560',
         sizes: '100vw',
-        loading: loading,
-        fetchpriority: fetch_priority,
+        loading: 'lazy',
         alt: alt
     }}
   </picture>
@@ -64,8 +61,7 @@
       alt="{{ alt | escape }}"
       width="1920"
       height="720"
-      loading="{{ loading }}"
-      fetchpriority="{{ fetch_priority }}"
+      loading="lazy"
     >
   </picture>
 {% else %}

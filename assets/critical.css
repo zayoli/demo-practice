@@ -6,6 +6,15 @@
   margin: 0;
 }
 
+:root {
+  --font-primary--family: 'Work Sans', Arial, sans-serif;
+  --page-width: 90rem;
+  --page-margin: 20px;
+  --color-background: #fff;
+  --color-foreground: #333;
+  --style-border-radius-inputs: 4px;
+}
+
 body {
   display: flex;
   flex-direction: column;

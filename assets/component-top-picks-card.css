@@ -1,0 +1,41 @@
+.picks-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 50% 25%, #292929, #131313 75%);
+  color: #fff;
+}
+.picks-card__media { position: relative; display: block; aspect-ratio: 1; overflow: hidden; }
+.picks-card__image, .picks-card__placeholder { width: 100%; height: 100%; object-fit: contain; }
+.picks-card__placeholder { fill: #555; }
+.picks-card__image--alternate { position: absolute; inset: 0; opacity: 0; transition: opacity 200ms; }
+.picks-card__body { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 0 28px 28px; }
+.picks-card__promotion { color: #ff5662; font-size: 14px; line-height: 1.5; }
+.picks-card__title { overflow: hidden; font-size: 18px; font-weight: 500; line-height: 1.5; }
+.picks-card__title a { display: block; overflow: hidden; color: inherit; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+.picks-card__rating { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+.picks-card__stars { background: linear-gradient(90deg, #ffca28 var(--star-fill, 100%), #777 var(--star-fill, 100%)); background-clip: text; color: transparent; font-size: 20px; line-height: 1; }
+.picks-card__no-reviews { min-height: 21px; color: #c5c5c5; font-size: 13px; }
+.picks-card__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 6px; font-size: 18px; }
+.picks-card__price s { color: #bfbfbf; font-size: 14px; }
+.picks-card__form { margin-top: auto; }
+.picks-card__button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; margin-top: auto; padding: 10px 8px; border: 0; border-radius: 4px; background: #cf2639; color: #fff; font: inherit; font-size: 15px; line-height: 24px; text-align: center; text-decoration: none; cursor: pointer; }
+.picks-card__button svg { width: 24px; height: 24px; }
+.picks-card__button:disabled { background: #555; color: #ddd; cursor: default; }
+.picks-card__button:not(:disabled):hover { background: #a91e2e; }
+.picks-card a:focus-visible { outline-offset: -4px; }
+@media (hover: hover) {
+  .picks-card__media:hover .picks-card__image--alternate { opacity: 1; }
+}
+@media (max-width: 749px) {
+  .picks-card__body { gap: 8px; padding: 0 20px 22px; }
+  .picks-card__title, .picks-card__price { font-size: 16px; }
+  .picks-card__promotion { font-size: 12px; }
+  .picks-card__price s { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .picks-card__image--alternate { transition: none; }
+}

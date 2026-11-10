@@ -1,0 +1,27 @@
+{% doc %}
+  Outputs theme configuration as HTML data attributes on the root element.
+
+  @example
+  <html {% render 'theme-settings' %}>
+{% enddoc %}
+
+{% liquid
+  assign primary_font = settings.type_primary_font
+  assign bold_font = primary_font | font_modify: 'weight', 'bold'
+  assign italic_font = primary_font | font_modify: 'style', 'italic'
+  assign bold_italic_font = bold_font | font_modify: 'style', 'italic'
+%}
+data-font-family="{{ primary_font.family | escape }}"
+data-font-fallback="{{ primary_font.fallback_families | escape }}"
+data-font-style="{{ primary_font.style | escape }}"
+data-font-weight="{{ primary_font.weight }}"
+data-font-url="{{ primary_font | font_url | escape }}"
+data-font-bold-url="{{ bold_font | font_url | escape }}"
+data-font-bold-weight="{{ bold_font.weight }}"
+data-font-italic-url="{{ italic_font | font_url | escape }}"
+data-font-bold-italic-url="{{ bold_italic_font | font_url | escape }}"
+data-page-width="{{ settings.max_page_width | escape }}"
+data-page-margin="{{ settings.min_page_margin }}"
+data-color-background="{{ settings.background_color | escape }}"
+data-color-foreground="{{ settings.foreground_color | escape }}"
+data-input-radius="{{ settings.input_corner_radius }}"

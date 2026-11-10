@@ -1,11 +1,7 @@
-{% liquid
-  assign image_loading = 'lazy'
-  assign image_priority = 'auto'
-  unless section.index > 1
-    assign image_loading = 'eager'
-    assign image_priority = 'high'
-  endunless
+<link rel="stylesheet" href="{{ 'section-banner.css' | asset_url }}">
+<script src="{{ 'section-banner.js' | asset_url }}" defer></script>
 
+{% liquid
   assign heading = section.settings.heading
   if heading == blank
     if section.settings.heading_level == 'h1'
@@ -23,9 +19,12 @@
   assign button_link = section.settings.button_link | default: routes.all_products_collection_url
 %}
 
-<section
+<image-banner
   class="banner full-width {{ section.settings.alignment }}"
-  style="--banner-height: {{ section.settings.height }}px; --banner-background: {{ section.settings.background_color }}; --banner-foreground: {{ section.settings.text_color }};"
+  role="region"
+  data-height="{{ section.settings.height }}"
+  data-background="{{ section.settings.background_color | escape }}"
+  data-foreground="{{ section.settings.text_color | escape }}"
   aria-labelledby="BannerHeading-{{ section.id }}"
 >
   <div class="banner__media"{% if section.settings.image == blank %} aria-hidden="true"{% endif %}>
@@ -37,8 +36,7 @@
           class: 'banner__image',
           widths: '375, 550, 750, 1100, 1500, 2000, 2400',
           sizes: '100vw',
-          loading: image_loading,
-          fetchpriority: image_priority
+          loading: 'lazy'
       }}
     {% else %}
       {{ 'lifestyle-1' | placeholder_svg_tag: 'banner__placeholder' }}
@@ -67,114 +65,7 @@
       </a>
     </div>
   </div>
-</section>
-
-{% stylesheet %}
-  .banner {
-    position: relative;
-    isolation: isolate;
-    min-height: var(--banner-height);
-    display: grid;
-    align-items: center;
-    overflow: hidden;
-    background: var(--banner-background);
-    color: var(--banner-foreground);
-  }
-
-  .banner__media {
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-  }
-
-  .banner__image,
-  .banner__placeholder {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .banner__placeholder {
-    opacity: 0.18;
-  }
-
-  .banner__inner {
-    width: min(100% - 96px, 1280px);
-    margin-inline: auto;
-    padding-block: 64px;
-  }
-
-  .banner__content {
-    width: min(100%, 480px);
-    padding: 32px;
-    background: var(--banner-background);
-  }
-
-  .banner--right .banner__content {
-    margin-left: auto;
-  }
-
-  .banner__eyebrow {
-    margin-bottom: 20px;
-    font-size: 12px;
-    line-height: 1.5;
-    letter-spacing: 0.16em;
-  }
-
-  .banner__heading {
-    font-size: clamp(36px, 4.5vw, 64px);
-    line-height: 1.08;
-    font-weight: 400;
-    letter-spacing: -0.045em;
-    text-wrap: balance;
-  }
-
-  .banner__description {
-    margin-top: 24px;
-    max-width: 36ch;
-    font-size: 16px;
-    line-height: 1.8;
-  }
-
-  .banner__button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 32px;
-    min-height: 48px;
-    margin-top: 32px;
-    padding: 12px 24px;
-    border: 1px solid var(--banner-foreground);
-    background: var(--banner-foreground);
-    color: var(--banner-background);
-    font-size: 14px;
-    line-height: 1.5;
-    text-decoration: none;
-    transition: background-color 160ms ease, color 160ms ease;
-  }
-
-  .banner__button:hover {
-    background: var(--banner-background);
-    color: var(--banner-foreground);
-  }
-
-  @media (max-width: 600px) {
-    .banner__inner {
-      width: calc(100% - 32px);
-      padding-block: 40px;
-    }
-
-    .banner__content {
-      padding: 24px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .banner__button {
-      transition: none;
-    }
-  }
-{% endstylesheet %}
+</image-banner>
 
 {% schema %}
 {
