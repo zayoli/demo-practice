@@ -2,6 +2,7 @@
   "general": {
     "404": "Not found",
     "article": "Article",
+    "banner": "Banner",
     "block": "Block",
     "blog": "Blog",
     "cart": "Cart",
@@ -29,27 +30,88 @@
     "section": "Section",
     "settings": "Settings",
     "sidebar": "Sidebar",
+    "slide": "Slide",
+    "slideshow": "Slideshow",
     "text": "Text",
     "theme": "Theme",
+    "top_picks": "Top picks",
+    "why_choose": "Why choose Redragon",
+    "benefit": "Service benefit",
+    "product_category": "Product category",
     "typography": "Typography"
   },
   "labels": {
     "alignment": "Alignment",
+    "autoplay": "Auto-rotate slides",
     "background": "Background",
+    "banner_height": "Banner minimum height",
+    "button_label": "Button label",
+    "button_link": "Button link",
+    "description": "Description",
+    "benefit_icon": "Service icon",
+    "benefit_image": "Custom icon",
+    "benefit_image_info": "Replaces the built-in icon when selected.",
+    "desktop_image": "Desktop image",
+    "example_image": "Example artwork",
+    "example_image_info": "Used when no desktop or mobile image is selected.",
+    "eyebrow": "Eyebrow",
+    "heading": "Heading",
+    "heading_level": "Heading level",
+    "image": "Image",
+    "image_alt": "Image description",
     "foreground": "Foreground",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
     "menu": "Menu",
+    "mobile_image": "Mobile image",
+    "mobile_ratio": "Mobile image ratio",
     "padding": "Padding",
+    "promotion": "Promotional text",
+    "product_limit": "Products per category",
+    "product_collection": "Collection",
+    "products": "Products",
+    "products_info": "Selected products take priority over the collection.",
+    "example_products": "Example products",
+    "example_products_info": "Reference products appear only when no products are selected. Their buttons open the reference store; select your own products to enable cart forms.",
     "page_margin": "Page margin",
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
+    "slide_interval": "Time between slides",
+    "slide_link": "Slide link",
+    "slide_title": "Slide title",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "transition_speed": "Transition duration"
   },
   "options": {
+    "benefit_icon": {
+      "shipping": "Shipping",
+      "returns": "Returns",
+      "warranty": "Warranty",
+      "rewards": "Rewards"
+    },
+    "product_category": {
+      "best_sellers": "Best sellers",
+      "new_arrivals": "New arrivals",
+      "bundle_deals": "Bundle deals"
+    },
+    "example_image": {
+      "none": "None",
+      "sale": "Black Friday sale",
+      "collection": "Gaming gear collection",
+      "keyboard": "EISA K768 PRO keyboard"
+    },
+    "mobile_ratio": {
+      "portrait": "Portrait (3:4)",
+      "square": "Square (1:1)",
+      "landscape": "Landscape (4:3)"
+    },
+    "heading_level": {
+      "primary": "Page heading (H1)",
+      "secondary": "Section heading (H2)"
+    },
     "alignment": {
       "left": "Left",
       "center": "Center",
@@ -71,6 +133,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }

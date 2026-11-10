@@ -1,0 +1,75 @@
+{% doc %}
+  Renders responsive desktop and mobile artwork for a slideshow slide.
+
+  @param {image} [image] - The desktop image selected by the merchant.
+  @param {image} [mobile_image] - Optional artwork for small screens.
+  @param {string} [example_image] - Bundled example artwork, used without uploaded images.
+  @param {string} alt - Accessible description of the artwork.
+  @param {string} loading - The image loading strategy.
+  @param {string} fetch_priority - The image fetch priority.
+
+  @example
+  {% render 'slideshow-image', image: block.settings.image, alt: block.settings.alt, loading: 'lazy', fetch_priority: 'auto' %}
+{% enddoc %}
+
+{% liquid
+  assign desktop_image = image | default: mobile_image
+  case example_image
+    when 'sale'
+      assign desktop_asset = 'hero-sale-desktop.webp'
+      assign mobile_asset = 'hero-sale-mobile.webp'
+    when 'collection'
+      assign desktop_asset = 'hero-collection-desktop.webp'
+      assign mobile_asset = 'hero-collection-mobile.webp'
+    when 'keyboard'
+      assign desktop_asset = 'hero-keyboard-desktop.webp'
+      assign mobile_asset = 'hero-keyboard-mobile.webp'
+  endcase
+%}
+
+{% if desktop_image != blank %}
+  <picture>
+    {% if mobile_image != blank %}
+      <source
+        media="(max-width: 749px)"
+        srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w"
+        sizes="100vw"
+        width="{{ mobile_image.width }}"
+        height="{{ mobile_image.height }}"
+      >
+    {% endif %}
+    {{
+      desktop_image
+      | image_url: width: 2560
+      | image_tag:
+        class: 'slideshow__image',
+        widths: '375, 550, 750, 1100, 1500, 1920, 2560',
+        sizes: '100vw',
+        loading: loading,
+        fetchpriority: fetch_priority,
+        alt: alt
+    }}
+  </picture>
+{% elsif desktop_asset != blank %}
+  <picture>
+    <source
+      media="(max-width: 749px)"
+      srcset="{{ mobile_asset | asset_url }}"
+      width="750"
+      height="1000"
+    >
+    <img
+      class="slideshow__image"
+      src="{{ desktop_asset | asset_url }}"
+      alt="{{ alt | escape }}"
+      width="1920"
+      height="720"
+      loading="{{ loading }}"
+      fetchpriority="{{ fetch_priority }}"
+    >
+  </picture>
+{% else %}
+  <div class="slideshow__placeholder" aria-hidden="true">
+    {{ 'lifestyle-1' | placeholder_svg_tag }}
+  </div>
+{% endif %}

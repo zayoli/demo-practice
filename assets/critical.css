@@ -44,6 +44,61 @@ dialog {
   color: var(--color-foreground);
 }
 
+main {
+  width: 100%;
+  flex: 1;
+}
+
+hero-slideshow {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+hero-slideshow .slideshow__viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+hero-slideshow .swiper-wrapper {
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+  box-sizing: content-box;
+  transition-property: transform;
+}
+
+hero-slideshow .swiper-slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+}
+
+:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 16px;
+  left: 16px;
+  padding: 12px 20px;
+  transform: translateY(calc(-100% - 20px));
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 p {
   text-wrap: pretty;
 }
@@ -76,6 +131,7 @@ body {
   font-family: var(--font-primary--family);
   background-color: var(--color-background);
   color: var(--color-foreground);
+  line-height: 1.5;
 }
 
 /** Section layout utilities */

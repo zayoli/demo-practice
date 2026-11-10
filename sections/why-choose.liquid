@@ -1,0 +1,216 @@
+{% liquid
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = 'why_choose.heading' | t
+  endif
+  assign pagination_index = '{{index}}'
+%}
+
+<why-choose
+  class="why-choose full-width"
+  aria-labelledby="WhyChooseHeading-{{ section.id }}"
+  data-page-label="{{ 'why_choose.go_to_page' | t: number: pagination_index | escape }}"
+>
+  <div class="why-choose__inner">
+    <h2 class="why-choose__heading" id="WhyChooseHeading-{{ section.id }}">{{ heading | escape }}</h2>
+    <div class="why-choose__viewport">
+      <ul class="why-choose__list swiper-wrapper" role="list">
+        {% for block in section.blocks %}
+          {% assign benefit = block.settings %}
+          <li class="why-choose__card swiper-slide" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+            <div class="why-choose__icon" aria-hidden="true">
+              {% if benefit.image != blank %}
+                {{ benefit.image | image_url: width: 144 | image_tag: loading: 'lazy', widths: '48, 96, 144', sizes: '48px', alt: '' }}
+              {% else %}
+                {% render 'why-choose-icon', icon: benefit.icon %}
+              {% endif %}
+            </div>
+            {% if benefit.title != blank %}
+              <h3 class="why-choose__title">{{ benefit.title | escape | newline_to_br }}</h3>
+            {% endif %}
+            {% if benefit.description != blank %}
+              <p class="why-choose__description">{{ benefit.description | escape }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="why-choose__pagination" hidden></div>
+  </div>
+</why-choose>
+
+{% stylesheet %}
+  .why-choose {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    color: #121212;
+  }
+
+  .why-choose__inner {
+    width: min(1440px, calc(100% - 100px));
+    margin-inline: auto;
+    padding-block: 40px 48px;
+  }
+
+  .why-choose__heading {
+    margin: 0 0 40px;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .why-choose__viewport { min-width: 0; }
+
+  .why-choose .why-choose__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .why-choose .why-choose__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    padding: clamp(18px, 1.5vw, 24px);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 3px 6px rgb(7 4 146 / 10%), 0 36px 90px rgb(6 47 125 / 5%), 0 18px 36px rgb(27 59 119 / 5%);
+    text-align: center;
+  }
+
+  .why-choose__icon { flex: 0 0 auto; width: 48px; height: 48px; margin-bottom: 12px; }
+  .why-choose__icon :is(svg, img) { width: 100%; height: 100%; object-fit: contain; }
+  .why-choose__title { margin: 0; font-size: clamp(18px, 1.7vw, 24px); font-weight: 700; line-height: 1.4; }
+  .why-choose__description { margin: 24px 0 0; color: #595959; font-size: 16px; line-height: 24px; }
+  .why-choose__pagination { display: none; }
+
+  @media (min-width: 750px) and (max-width: 989px) {
+    .why-choose__inner { width: calc(100% - 64px); }
+    .why-choose .why-choose__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 749px) {
+    .why-choose__inner { width: calc(100% - 40px); padding-block: 32px 30px; }
+    .why-choose__heading { margin-bottom: 28px; font-size: 24px; }
+    .why-choose__viewport { padding: 4px 0 10px; }
+    .why-choose__viewport:not(.swiper-initialized) { overflow-x: auto; scroll-snap-type: x mandatory; }
+    .why-choose .why-choose__list { position: relative; display: flex; flex-flow: row nowrap; gap: 0; box-sizing: content-box; transition-property: transform; }
+    .why-choose__viewport:not(.swiper-initialized) .why-choose__list { gap: 16px; }
+    .why-choose .why-choose__card { flex: 0 0 auto; width: calc((100% - 16px) / 2); min-height: 198px; padding: 30px 16px 24px; scroll-snap-align: start; }
+    .why-choose__icon { width: 40px; height: 40px; margin-bottom: 26px; }
+    .why-choose__title { font-size: 16px; line-height: 1.35; }
+    .why-choose__description { display: none; }
+    .why-choose .why-choose__pagination:not([hidden]) { position: static; display: flex; justify-content: center; gap: 6px; margin-top: 0; }
+    .why-choose .why-choose__pagination .swiper-pagination-bullet { position: relative; width: 22px; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; opacity: 1; cursor: pointer; }
+    .why-choose .swiper-pagination-bullet::after { position: absolute; top: 20px; right: 0; left: 0; height: 4px; background: #bfbfbf; content: ''; }
+    .why-choose .swiper-pagination-bullet-active::after { border: 1px solid #c52836; background: #fff; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('why-choose')) {
+    class WhyChoose extends HTMLElement {
+      connectedCallback() {
+        this.controller = new AbortController();
+        const options = { once: true, signal: this.controller.signal };
+        const initialize = () => this.initialize();
+        document.getElementById('SwiperScript')?.addEventListener('load', initialize, options);
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, options);
+        else initialize();
+      }
+
+      initialize() {
+        if (this.media || !this.isConnected || !window.Swiper || document.readyState === 'loading') return;
+        this.media = window.matchMedia('(max-width: 749px)');
+        this.pagination = this.querySelector('.why-choose__pagination');
+        const options = { signal: this.controller.signal };
+        this.media.addEventListener('change', () => this.updateLayout(), options);
+        this.addEventListener('shopify:block:select', (event) => {
+          const index = [...this.querySelectorAll('.why-choose__card')].findIndex((card) => card.dataset.blockId === event.detail.blockId);
+          if (index >= 0) this.swiper?.slideTo(index, 0);
+        }, options);
+        this.updateLayout();
+      }
+
+      updateLayout() {
+        if (!this.media.matches) {
+          this.swiper?.destroy(true, true);
+          this.swiper = undefined;
+          this.pagination.hidden = true;
+          return;
+        }
+        if (this.swiper || this.querySelectorAll('.why-choose__card').length < 2) return;
+        this.swiper = new Swiper(this.querySelector('.why-choose__viewport'), {
+          slidesPerView: 2,
+          spaceBetween: 16,
+          speed: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 400,
+          watchOverflow: true,
+          pagination: { el: this.pagination, clickable: true },
+          a11y: { paginationBulletMessage: this.dataset.pageLabel }
+        });
+        this.pagination.hidden = false;
+      }
+
+      disconnectedCallback() {
+        this.controller?.abort();
+        this.swiper?.destroy(true, true);
+        this.swiper = undefined;
+        this.media = undefined;
+        if (this.pagination) this.pagination.hidden = true;
+      }
+    }
+    customElements.define('why-choose', WhyChoose);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.why_choose",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "t:labels.heading", "default": "Why Choose Redragon" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "t:general.benefit",
+      "settings": [
+        {
+          "type": "select", "id": "icon", "label": "t:labels.benefit_icon", "default": "shipping",
+          "options": [
+            { "value": "shipping", "label": "t:options.benefit_icon.shipping" },
+            { "value": "returns", "label": "t:options.benefit_icon.returns" },
+            { "value": "warranty", "label": "t:options.benefit_icon.warranty" },
+            { "value": "rewards", "label": "t:options.benefit_icon.rewards" }
+          ]
+        },
+        { "type": "image_picker", "id": "image", "label": "t:labels.benefit_image", "info": "t:labels.benefit_image_info" },
+        { "type": "textarea", "id": "title", "label": "t:labels.heading" },
+        { "type": "textarea", "id": "description", "label": "t:labels.description" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.why_choose",
+      "blocks": [
+        { "type": "benefit", "settings": { "icon": "shipping", "title": "Free U.S.\nEconomy Shipping", "description": "Orders over $49 qualify for free shipping. Track your parcel anytime." } },
+        { "type": "benefit", "settings": { "icon": "returns", "title": "30-Day\nReturn Policy", "description": "Return your order within 30 days." } },
+        { "type": "benefit", "settings": { "icon": "warranty", "title": "2-Year\nLimited Warranty", "description": "Only available on redragonshop." } },
+        { "type": "benefit", "settings": { "icon": "rewards", "title": "Enjoy Your\nRedragon Perks", "description": "Join Redragon Reward Program and enjoy exclusive deals and rewards." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

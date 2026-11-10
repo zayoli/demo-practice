@@ -1,4 +1,58 @@
 {
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
+  "banner": {
+    "primary_heading": "Make room for better.",
+    "secondary_heading": "Considered for every day.",
+    "shop_now": "Shop now"
+  },
+  "slideshow": {
+    "heading": "Featured collections",
+    "carousel": "Carousel",
+    "slide": "Slide",
+    "slide_label": "Slide {{ number }} of {{ total }}",
+    "go_to_slide": "Go to slide {{ number }}",
+    "previous": "Previous slide",
+    "next": "Next slide",
+    "first": "This is the first slide",
+    "last": "This is the last slide"
+  },
+  "top_picks": {
+    "heading": "Top Picks For You",
+    "category": "Products",
+    "go_to_page": "Go to product page {{ number }}",
+    "previous": "Previous products",
+    "next": "Next products",
+    "empty": "Select a collection or products to display here.",
+    "rating": "Rated {{ rating }} out of 5, {{ count }} reviews",
+    "new_arrival": "New arrival",
+    "example_price": "${{ amount }} USD",
+    "add_to_cart": "Add To Cart",
+    "sold_out": "Sold out",
+    "choose_options": "Choose options",
+    "view_product": "View product"
+  },
+  "why_choose": {
+    "heading": "Why Choose Redragon",
+    "go_to_page": "Go to benefit page {{ number }}"
+  },
+  "header": {
+    "home": "Home",
+    "shop": "Shop all",
+    "collections": "Collections",
+    "search": "Search",
+    "account": "My account",
+    "cart": "Shopping bag, {{ count }} items",
+    "navigation": "Main navigation"
+  },
+  "footer": {
+    "description": "Thoughtful essentials. A fresh perspective on the everyday.",
+    "explore": "Explore",
+    "navigation": "Footer navigation",
+    "rights": "All rights reserved.",
+    "payment_methods": "Accepted payment methods"
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",

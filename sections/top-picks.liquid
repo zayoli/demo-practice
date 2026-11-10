@@ -1,0 +1,415 @@
+{% liquid
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = 'top_picks.heading' | t
+  endif
+  assign pagination_index = '{{index}}'
+%}
+
+<top-picks
+  class="top-picks full-width"
+  aria-labelledby="TopPicksHeading-{{ section.id }}"
+  data-page-label="{{ 'top_picks.go_to_page' | t: number: pagination_index | escape }}"
+>
+  <h2 class="top-picks__heading" id="TopPicksHeading-{{ section.id }}">{{ heading | escape }}</h2>
+
+  <div class="top-picks__tabs" role="tablist" aria-label="{{ heading | escape }}">
+    {% for block in section.blocks %}
+      {% liquid
+        assign tab_label = block.settings.title
+        if tab_label == blank
+          assign tab_label = 'top_picks.category' | t
+        endif
+      %}
+      <a
+        class="top-picks__tab"
+        id="TopPicksTab-{{ section.id }}-{{ block.id }}"
+        href="#TopPicksPanel-{{ section.id }}-{{ block.id }}"
+        role="tab"
+        aria-controls="TopPicksPanel-{{ section.id }}-{{ block.id }}"
+        aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+        data-block-id="{{ block.id }}"
+        {{ block.shopify_attributes }}
+      >{{ tab_label | escape }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="top-picks__content">
+    {% for block in section.blocks %}
+      {% liquid
+        assign group_settings = block.settings
+        assign selected_products = group_settings.products
+        if selected_products == blank
+          assign selected_products = group_settings.collection.products
+        endif
+      %}
+      <div
+        class="top-picks__panel"
+        id="TopPicksPanel-{{ section.id }}-{{ block.id }}"
+        role="tabpanel"
+        aria-labelledby="TopPicksTab-{{ section.id }}-{{ block.id }}"
+        data-block-id="{{ block.id }}"
+        tabindex="0"
+      >
+        <div class="top-picks__viewport swiper">
+          <div class="swiper-wrapper" id="TopPicksProducts-{{ section.id }}-{{ block.id }}">
+            {% for picked_product in selected_products limit: section.settings.product_limit %}
+              <div class="top-picks__slide swiper-slide">
+                {% capture form_id %}TopPicksForm-{{ section.id }}-{{ block.id }}-{{ picked_product.id }}{% endcapture %}
+                {% render 'top-picks-card', card_product: picked_product, form_id: form_id, promotion: section.settings.promotion %}
+              </div>
+            {% else %}
+              {% if group_settings.example_group != 'none' %}
+                {% for example_index in (0..5) limit: section.settings.product_limit %}
+                  <div class="top-picks__slide swiper-slide">
+                    {% render 'top-picks-card', example_group: group_settings.example_group, example_index: example_index, promotion: section.settings.promotion %}
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="top-picks__empty">{{ 'top_picks.empty' | t }}</p>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="top-picks__controls" hidden>
+          <button class="top-picks__arrow top-picks__arrow--previous" type="button" aria-label="{{ 'top_picks.previous' | t | escape }}" aria-controls="TopPicksProducts-{{ section.id }}-{{ block.id }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="m14 5-7 7 7 7" /></svg>
+          </button>
+          <button class="top-picks__arrow top-picks__arrow--next" type="button" aria-label="{{ 'top_picks.next' | t | escape }}" aria-controls="TopPicksProducts-{{ section.id }}-{{ block.id }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="m10 5 7 7-7 7" /></svg>
+          </button>
+          <div class="top-picks__pagination"></div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</top-picks>
+
+{% stylesheet %}
+  .top-picks {
+    display: block;
+    min-width: 0;
+    padding-block: 42px 32px;
+    overflow: hidden;
+    background: #fff;
+    color: #171717;
+  }
+
+  .top-picks__heading {
+    padding-inline: 20px;
+    color: #c52836;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  .top-picks__tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 40px 20px;
+  }
+
+  .top-picks__tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 6px 20px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: #252525;
+    color: #fff;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .top-picks__tab[aria-selected='true'] {
+    border-color: #c52836;
+    background: #f4f4f4;
+    color: #171717;
+  }
+
+  .top-picks__content {
+    width: min(1440px, calc(100% - 100px));
+    margin-inline: auto;
+  }
+
+  .top-picks__panel {
+    position: relative;
+    min-width: 0;
+  }
+
+  .top-picks__panel[hidden],
+  .top-picks__controls[hidden] {
+    display: none;
+  }
+
+  .top-picks:not([data-enhanced]) .top-picks__panel + .top-picks__panel {
+    margin-top: 32px;
+  }
+
+  .top-picks__viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .top-picks__viewport:not(.swiper-initialized) {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .top-picks__viewport .swiper-wrapper {
+    position: relative;
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    box-sizing: content-box;
+    transition-property: transform;
+    align-items: stretch;
+  }
+
+  .top-picks__viewport:not(.swiper-initialized) .swiper-wrapper {
+    gap: 24px;
+  }
+
+  .top-picks__slide {
+    position: relative;
+    flex: 0 0 auto;
+    width: calc((100% - 48px) / 3);
+    min-width: 0;
+    height: auto;
+    scroll-snap-align: start;
+  }
+
+  .top-picks__arrow {
+    position: absolute;
+    z-index: 2;
+    top: calc(50% - 22px);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(80 80 80 / 65%);
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .top-picks__arrow--previous { left: -22px; }
+  .top-picks__arrow--next { right: -22px; }
+  .top-picks__arrow:disabled { opacity: 0.35; cursor: default; }
+  .top-picks__arrow:not(:disabled):hover { background: #333; }
+
+  .top-picks .top-picks__pagination {
+    position: static;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .top-picks .top-picks__pagination .swiper-pagination-bullet {
+    position: relative;
+    width: 26px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .top-picks .swiper-pagination-bullet::after {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    left: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: #bfbfbf;
+    content: '';
+  }
+
+  .top-picks .swiper-pagination-bullet-active::after { background: #c52836; }
+  .top-picks__empty { padding: 40px 0; }
+
+  @media (min-width: 1440px) {
+    .top-picks__slide { width: calc((100% - 72px) / 4); }
+  }
+
+  @media (min-width: 750px) and (max-width: 989px) {
+    .top-picks__content { width: calc(100% - 64px); }
+    .top-picks__slide { width: calc((100% - 24px) / 2); }
+  }
+
+  @media (max-width: 749px) {
+    .top-picks { padding-block: 36px 24px; }
+    .top-picks__heading { font-size: 24px; }
+    .top-picks__tabs { gap: 6px; margin-block: 28px 32px; }
+    .top-picks__tab { min-height: 44px; padding: 6px 9px; font-size: 12px; }
+    .top-picks__content { width: calc(100% - 40px); }
+    .top-picks__slide { width: calc((100% - 4px) / 1.2); }
+    .top-picks__arrow { display: none; }
+    .top-picks__viewport:not(.swiper-initialized) .swiper-wrapper { gap: 20px; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('top-picks')) {
+    class TopPicks extends HTMLElement {
+      connectedCallback() {
+        this.controller = new AbortController();
+        const options = { once: true, signal: this.controller.signal };
+        const initialize = () => this.initialize();
+        document.getElementById('SwiperScript')?.addEventListener('load', initialize, options);
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, options);
+        else initialize();
+      }
+
+      initialize() {
+        if (this.hasAttribute('data-enhanced') || !this.isConnected || !window.Swiper || document.readyState === 'loading') return;
+        this.tabs = [...this.querySelectorAll('[role="tab"]')];
+        this.panels = [...this.querySelectorAll('[role="tabpanel"]')];
+        if (!this.tabs.length) return;
+        this.instances = new Map();
+        this.setAttribute('data-enhanced', '');
+        const options = { signal: this.controller.signal };
+
+        this.tabs.forEach((tab, index) => {
+          tab.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.select(index);
+          }, options);
+          tab.addEventListener('keydown', (event) => {
+            if (event.key === ' ' || event.key === 'Enter') {
+              event.preventDefault();
+              this.select(index);
+              return;
+            }
+            let target = index;
+            if (event.key === 'ArrowRight') target = (index + 1) % this.tabs.length;
+            else if (event.key === 'ArrowLeft') target = (index - 1 + this.tabs.length) % this.tabs.length;
+            else if (event.key === 'Home') target = 0;
+            else if (event.key === 'End') target = this.tabs.length - 1;
+            else return;
+            event.preventDefault();
+            this.select(target);
+            this.tabs[target].focus();
+          }, options);
+        });
+        this.addEventListener('shopify:block:select', (event) => {
+          const index = this.tabs.findIndex((tab) => tab.dataset.blockId === event.detail.blockId);
+          if (index >= 0) this.select(index);
+        }, options);
+        this.select(0);
+      }
+
+      select(index) {
+        this.tabs.forEach((tab, tabIndex) => {
+          tab.setAttribute('aria-selected', String(tabIndex === index));
+          tab.tabIndex = tabIndex === index ? 0 : -1;
+          this.panels[tabIndex].hidden = tabIndex !== index;
+        });
+        const panel = this.panels[index];
+        if (!window.Swiper || !panel.querySelector('.swiper-slide')) return;
+        if (this.instances.has(panel)) {
+          this.instances.get(panel).update();
+          return;
+        }
+        const previous = panel.querySelector('.top-picks__arrow--previous');
+        const next = panel.querySelector('.top-picks__arrow--next');
+        const swiper = new Swiper(panel.querySelector('.top-picks__viewport'), {
+          slidesPerView: 1.2,
+          slidesPerGroup: 1,
+          spaceBetween: 20,
+          speed: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450,
+          watchOverflow: true,
+          navigation: { prevEl: previous, nextEl: next },
+          pagination: { el: panel.querySelector('.top-picks__pagination'), clickable: true },
+          breakpoints: {
+            750: { slidesPerView: 2, slidesPerGroup: 2, spaceBetween: 24 },
+            990: { slidesPerView: 3, slidesPerGroup: 3, spaceBetween: 24 },
+            1440: { slidesPerView: 4, slidesPerGroup: 4, spaceBetween: 24 }
+          },
+          a11y: {
+            prevSlideMessage: previous.getAttribute('aria-label'),
+            nextSlideMessage: next.getAttribute('aria-label'),
+            paginationBulletMessage: this.dataset.pageLabel
+          }
+        });
+        this.instances.set(panel, swiper);
+        panel.querySelector('.top-picks__controls').hidden = false;
+      }
+
+      disconnectedCallback() {
+        this.controller?.abort();
+        this.instances?.forEach((swiper) => swiper.destroy(true, true));
+        this.removeAttribute('data-enhanced');
+        this.panels?.forEach((panel) => {
+          panel.hidden = false;
+          panel.querySelector('.top-picks__controls').hidden = true;
+        });
+      }
+    }
+    customElements.define('top-picks', TopPicks);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.top_picks",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "t:labels.heading", "default": "Top Picks For You" },
+    { "type": "text", "id": "promotion", "label": "t:labels.promotion" },
+    { "type": "range", "id": "product_limit", "label": "t:labels.product_limit", "min": 4, "max": 12, "step": 1, "default": 8 }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "t:general.product_category",
+      "settings": [
+        { "type": "text", "id": "title", "label": "t:labels.heading" },
+        { "type": "collection", "id": "collection", "label": "t:labels.product_collection" },
+        { "type": "product_list", "id": "products", "label": "t:labels.products", "limit": 12, "info": "t:labels.products_info" },
+        {
+          "type": "select",
+          "id": "example_group",
+          "label": "t:labels.example_products",
+          "info": "t:labels.example_products_info",
+          "options": [
+            { "value": "none", "label": "t:options.example_image.none" },
+            { "value": "best_sellers", "label": "t:options.product_category.best_sellers" },
+            { "value": "new_arrivals", "label": "t:options.product_category.new_arrivals" },
+            { "value": "bundle_deals", "label": "t:options.product_category.bundle_deals" }
+          ],
+          "default": "none"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.top_picks",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Best Sellers", "example_group": "best_sellers" } },
+        { "type": "category", "settings": { "title": "New Arrivals", "example_group": "new_arrivals" } },
+        { "type": "category", "settings": { "title": "Bundle Deals", "example_group": "bundle_deals" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

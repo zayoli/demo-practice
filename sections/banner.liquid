@@ -1,0 +1,225 @@
+{% liquid
+  assign image_loading = 'lazy'
+  assign image_priority = 'auto'
+  unless section.index > 1
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  endunless
+
+  assign heading = section.settings.heading
+  if heading == blank
+    if section.settings.heading_level == 'h1'
+      assign heading = 'banner.primary_heading' | t
+    else
+      assign heading = 'banner.secondary_heading' | t
+    endif
+  endif
+
+  assign button_label = section.settings.button_label
+  if button_label == blank
+    assign button_label = 'banner.shop_now' | t
+  endif
+
+  assign button_link = section.settings.button_link | default: routes.all_products_collection_url
+%}
+
+<section
+  class="banner full-width {{ section.settings.alignment }}"
+  style="--banner-height: {{ section.settings.height }}px; --banner-background: {{ section.settings.background_color }}; --banner-foreground: {{ section.settings.text_color }};"
+  aria-labelledby="BannerHeading-{{ section.id }}"
+>
+  <div class="banner__media"{% if section.settings.image == blank %} aria-hidden="true"{% endif %}>
+    {% if section.settings.image != blank %}
+      {{
+        section.settings.image
+        | image_url: width: 2400
+        | image_tag:
+          class: 'banner__image',
+          widths: '375, 550, 750, 1100, 1500, 2000, 2400',
+          sizes: '100vw',
+          loading: image_loading,
+          fetchpriority: image_priority
+      }}
+    {% else %}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'banner__placeholder' }}
+    {% endif %}
+  </div>
+
+  <div class="banner__inner">
+    <div class="banner__content">
+      {% if section.settings.eyebrow != blank %}
+        <p class="banner__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {% endif %}
+
+      {% if section.settings.heading_level == 'h1' %}
+        <h1 class="banner__heading" id="BannerHeading-{{ section.id }}">{{ heading | escape }}</h1>
+      {% else %}
+        <h2 class="banner__heading" id="BannerHeading-{{ section.id }}">{{ heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.description != blank %}
+        <p class="banner__description">{{ section.settings.description | escape | newline_to_br }}</p>
+      {% endif %}
+
+      <a class="banner__button" href="{{ button_link }}">
+        {{ button_label | escape }}
+        <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .banner {
+    position: relative;
+    isolation: isolate;
+    min-height: var(--banner-height);
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+    background: var(--banner-background);
+    color: var(--banner-foreground);
+  }
+
+  .banner__media {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+  }
+
+  .banner__image,
+  .banner__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .banner__placeholder {
+    opacity: 0.18;
+  }
+
+  .banner__inner {
+    width: min(100% - 96px, 1280px);
+    margin-inline: auto;
+    padding-block: 64px;
+  }
+
+  .banner__content {
+    width: min(100%, 480px);
+    padding: 32px;
+    background: var(--banner-background);
+  }
+
+  .banner--right .banner__content {
+    margin-left: auto;
+  }
+
+  .banner__eyebrow {
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 0.16em;
+  }
+
+  .banner__heading {
+    font-size: clamp(36px, 4.5vw, 64px);
+    line-height: 1.08;
+    font-weight: 400;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .banner__description {
+    margin-top: 24px;
+    max-width: 36ch;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .banner__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 48px;
+    margin-top: 32px;
+    padding: 12px 24px;
+    border: 1px solid var(--banner-foreground);
+    background: var(--banner-foreground);
+    color: var(--banner-background);
+    font-size: 14px;
+    line-height: 1.5;
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+
+  .banner__button:hover {
+    background: var(--banner-background);
+    color: var(--banner-foreground);
+  }
+
+  @media (max-width: 600px) {
+    .banner__inner {
+      width: calc(100% - 32px);
+      padding-block: 40px;
+    }
+
+    .banner__content {
+      padding: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .banner__button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.banner",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "t:labels.image" },
+    { "type": "text", "id": "eyebrow", "label": "t:labels.eyebrow" },
+    { "type": "text", "id": "heading", "label": "t:labels.heading" },
+    { "type": "textarea", "id": "description", "label": "t:labels.description" },
+    { "type": "text", "id": "button_label", "label": "t:labels.button_label" },
+    { "type": "url", "id": "button_link", "label": "t:labels.button_link" },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "t:labels.banner_height",
+      "min": 320,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 640
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:labels.alignment",
+      "options": [
+        { "value": "banner--left", "label": "t:options.alignment.left" },
+        { "value": "banner--right", "label": "t:options.alignment.right" }
+      ],
+      "default": "banner--left"
+    },
+    {
+      "type": "select",
+      "id": "heading_level",
+      "label": "t:labels.heading_level",
+      "options": [
+        { "value": "h1", "label": "t:options.heading_level.primary" },
+        { "value": "h2", "label": "t:options.heading_level.secondary" }
+      ],
+      "default": "h2"
+    },
+    { "type": "color", "id": "background_color", "label": "t:labels.background", "default": "#e9e5de" },
+    { "type": "color", "id": "text_color", "label": "t:labels.foreground", "default": "#252b27" }
+  ],
+  "presets": [{ "name": "t:general.banner" }]
+}
+{% endschema %}
