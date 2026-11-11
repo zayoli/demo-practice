@@ -15,10 +15,6 @@ if (!customElements.get('top-picks')) {
       this.panels = [...this.querySelectorAll('[role="tabpanel"]')];
       if (!this.tabs.length) return;
       this.instances = new Map();
-      this.querySelectorAll('[data-star-fill]').forEach((stars) => {
-        const fill = Number(stars.dataset.starFill);
-        if (Number.isFinite(fill)) stars.style.setProperty('--star-fill', `${Math.max(0, Math.min(100, fill))}%`);
-      });
       this.setAttribute('data-enhanced', '');
       const options = { signal: this.controller.signal };
 

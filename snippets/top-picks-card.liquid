@@ -1,109 +1,128 @@
 {% doc %}
-  Renders a product card, or one reference product when no catalog is configured.
+  Renders a store product with clickable color swatches and its variant price.
 
-  @param {product} [card_product] - A product from the selected collection or list
-  @param {string} [form_id] - A unique product form ID
+  @param {product} card_product - A product from the tab's collection
+  @param {string} form_id - A unique product form ID
   @param {string} [promotion] - Optional promotional text
-  @param {string} [example_group] - Reference category for the empty catalog
-  @param {number} [example_index] - Zero-based reference product index
 
   @example
   {% render 'top-picks-card', card_product: product, form_id: 'FeaturedProduct' %}
 {% enddoc %}
 
 {% liquid
-  if card_product != blank
-    assign card_title = card_product.title
-    assign card_url = card_product.url
-    assign card_variant = card_product.selected_or_first_available_variant
-  else
-    case example_group
-      when 'new_arrivals'
-        assign example_rows = 'fizz-k617-60-white-japanese-jis-mechanical-keyboard|FIZZ K617 60% Japanese JIS Mechanical Keyboard|54.99|0|0|0;fizz-k617-60-white-grey-uk-qwerty-compact-mechanical-keyboard|FIZZ K617 60% White & Grey UK QWERTY|39.99|0|0|0;ucal-k673-uk|UCAL K673 PRO UK QWERTY Keyboard|64.99|0|0|0;eisa-k686-pro-xmas-edition|EISA K686 PRO (Xmas Edition)|59.99|74.99|0|0;k688|BRAGI K688 PRO Korean Layout Keyboard|62.99|0|0|0;ws7022-wireless-deskset-air-plus|WS7022 Wireless DeskSet Air Plus|44.99|0|0|0'
-      when 'bundle_deals'
-        assign example_rows = 'bs8773-wireless-keyboard-and-mouse-combo|BS8773 Wireless Keyboard and Mouse Combo|36.99|0|4.86|29;artemis-k719-pro-keyboard-predator-m612-pro-mouse-anime-combo|ARTEMIS K719 PRO & PREDATOR M612 PRO Anime Combo|94.99|0|5|6;horus-k618-ultra-slim-keyboard-trident-m693-mouse-combo|HORUS K618 & TRIDENT M693 Tri-Mode Combo|89.99|94.99|4.45|22;s168-3-mode-wireless-gaming-keyboard-mouse-combo|S168 Wireless Gaming Keyboard & Mouse Combo|59.99|0|4.33|3;bs7552-wireless-keyboard-and-mouse-combo|BS7552 Wireless Keyboard and Mouse Combo|44.99|0|4.87|52;eisa-k686-keyboard-and-m916-1k-hz-mouse-anime-combo|EISA K686 PRO SE & K1NG M916 PRO Anime Combo|89.99|0|4.83|29'
-      else
-        assign example_rows = 'impact-m908|IMPACT M908|32.99|0|4.67|367;m913|IMPACT ELITE M913|46.99|0|4.62|258;draconic-k530-white|DRACONIC K530 PRO WHITE (Brown Switches)|49.99|59.99|4.76|135;horus-k618-ultrathin-wireless-keyboard|HORUS K618 Ultra-slim Wireless Mechanical Keyboard|64.99|0|4.66|177;small-mechanical-keyboard|FIZZ K617 60% White & Grey Mechanical Keyboard|44.99|47.99|4.79|136;h510-zeus-white|H510 ZEUS WHITE & PINK|61.99|66.99|4.89|98'
-    endcase
-    assign example_rows = example_rows | split: ';'
-    assign example = example_rows[example_index] | split: '|'
-    assign card_title = example[1]
-    assign example_compare = example[3] | plus: 0
-    assign example_rating = example[4] | plus: 0
-    assign example_reviews = example[5] | plus: 0
-    assign star_fill = example_rating | times: 20
-    capture card_url
-      echo 'https://redragonshop.com/products/'
-      echo example[0]
-    endcapture
-    capture example_asset
-      echo 'top-picks-'
-      echo example_group
-      echo '-'
-      echo example_index | plus: 1
-      echo '.webp'
-    endcapture
+  assign card_title = card_product.title
+  assign card_url = card_product.url
+  assign card_variant = card_product.selected_or_first_available_variant
+  assign card_image = card_variant.featured_image | default: card_product.featured_image
+  assign card_color_option = nil
+  for product_option in card_product.options_with_values
+    assign option_name = product_option.name | downcase
+    assign swatch_count = product_option.values | map: 'swatch' | compact | size
+    if swatch_count > 0
+      assign card_color_option = product_option
+      break
+    elsif option_name == 'color' or option_name == 'colour'
+      assign card_color_option = product_option
+    elsif option_name == '颜色' or option_name == '顏色'
+      assign card_color_option = product_option
+    endif
+  endfor
+  if card_color_option != nil
+    assign card_url = card_variant.url | default: card_url
   endif
+  assign card_quick_add = false
+  unless card_product.requires_selling_plan
+    if card_product.has_only_default_variant
+      assign card_quick_add = true
+    elsif card_product.options.size == 1
+      if card_color_option != nil
+        assign card_quick_add = true
+      endif
+    endif
+  endunless
 %}
 
-<article class="picks-card">
-  <a class="picks-card__media" href="{{ card_url }}" aria-label="{{ card_title | escape }}">
-    {% if card_product != blank %}
-      {% if card_product.featured_image != blank %}
-        {{ card_product.featured_image | image_url: width: 800 | image_tag: class: 'picks-card__image', loading: 'lazy', widths: '280, 400, 560, 800', sizes: '(min-width: 1440px) 340px, (min-width: 990px) 33vw, (min-width: 750px) 50vw, 80vw' }}
+<top-picks-card class="picks-card" role="article">
+  <div class="picks-card__visual">
+    <a class="picks-card__media" href="{{ card_url | escape }}" aria-label="{{ card_title | escape }}" data-card-link>
+      {% if card_image != blank %}
+        {{ card_image | image_url: width: 800 | image_tag: class: 'picks-card__image', loading: 'lazy', widths: '280, 400, 560, 800', sizes: '(min-width: 1440px) 340px, (min-width: 990px) 33vw, (min-width: 750px) 50vw, 80vw', alt: card_title }}
       {% else %}
         {{ 'product-1' | placeholder_svg_tag: 'picks-card__placeholder' }}
       {% endif %}
-      {% if card_product.images[1] != blank %}
-        {{ card_product.images[1] | image_url: width: 800 | image_tag: class: 'picks-card__image picks-card__image--alternate', loading: 'lazy', widths: '280, 400, 560, 800', sizes: '(min-width: 1440px) 340px, (min-width: 990px) 33vw, (min-width: 750px) 50vw, 80vw', alt: '' }}
-      {% endif %}
-    {% else %}
-      <img class="picks-card__image" src="{{ example_asset | asset_url }}" alt="{{ card_title | escape }}" width="640" height="640" loading="lazy">
+    </a>
+    {% if card_color_option.values.size > 1 %}
+      {% assign color_option_index = card_color_option.position | minus: 1 %}
+      <div class="picks-card__swatches swiper-no-swiping" role="group" aria-label="{{ 'top_picks.colors_for' | t: product: card_title | escape }}">
+        {% for color_value in card_color_option.values %}
+          {% liquid
+            assign color_variant = color_value.variant
+            assign color_url = color_variant.url | default: color_value.product_url | default: card_product.url
+            assign color_image = color_variant.featured_image | default: card_product.featured_image
+            assign color_selected = false
+            if card_variant.options[color_option_index] == color_value.name
+              assign color_selected = true
+            endif
+            assign color_label = color_value.name
+            unless color_value.available
+              assign color_label = 'top_picks.color_unavailable' | t: color: color_value.name
+            endunless
+          %}
+          <a
+            class="picks-card__swatch"
+            href="{{ color_url | escape }}"
+            role="button"
+            aria-pressed="{{ color_selected }}"
+            aria-label="{{ color_label | escape }}"
+            title="{{ color_label | escape }}"
+            data-swatch-color="{{ color_value.swatch.color | default: color_value.name | escape }}"
+            {% if color_variant != blank %}
+              data-card-variant="{{ color_variant.id }}"
+              data-available="{{ color_variant.available }}"
+              data-price="{{ color_variant.price | money_with_currency | escape }}"
+              data-compare-price="{% if color_variant.compare_at_price > color_variant.price %}{{ color_variant.compare_at_price | money_with_currency | escape }}{% endif %}"
+            {% endif %}
+          >
+            <span class="picks-card__swatch-chip" aria-hidden="true">
+              {% if color_value.swatch.image != blank %}
+                {{ color_value.swatch.image | image_url: width: 48 | image_tag: class: 'picks-card__swatch-image', loading: 'lazy', widths: '24, 48', sizes: '24px', alt: '' }}
+              {% else %}
+                <span class="picks-card__swatch-name">{{ color_value.name | escape }}</span>
+              {% endif %}
+            </span>
+            <template data-card-image>
+              {% if color_image != blank %}
+                {{ color_image | image_url: width: 800 | image_tag: class: 'picks-card__image', loading: 'lazy', widths: '280, 400, 560, 800', sizes: '(min-width: 1440px) 340px, (min-width: 990px) 33vw, (min-width: 750px) 50vw, 80vw', alt: card_title }}
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'picks-card__placeholder' }}
+              {% endif %}
+            </template>
+          </a>
+        {% endfor %}
+      </div>
     {% endif %}
-  </a>
+  </div>
 
   <div class="picks-card__body">
     {% if promotion != blank %}<p class="picks-card__promotion">{{ promotion | escape }}</p>{% endif %}
-    <h3 class="picks-card__title"><a href="{{ card_url }}" title="{{ card_title | escape }}">{{ card_title | escape }}</a></h3>
-    {% if card_product == blank %}
-      {% if example_reviews > 0 %}
-        <div class="picks-card__rating" aria-label="{{ 'top_picks.rating' | t: rating: example_rating, count: example_reviews | escape }}">
-          <span class="picks-card__stars" data-star-fill="{{ star_fill }}" aria-hidden="true">★★★★★</span>
-          <span aria-hidden="true">({{ example_reviews }})</span>
-        </div>
-      {% else %}
-        <p class="picks-card__no-reviews">{{ 'top_picks.new_arrival' | t }}</p>
-      {% endif %}
-    {% endif %}
-    <div class="picks-card__price">
-      {% if card_product != blank %}
-        <span>{{ card_variant.price | money_with_currency }}</span>
-        {% if card_variant.compare_at_price > card_variant.price %}<s>{{ card_variant.compare_at_price | money_with_currency }}</s>{% endif %}
-      {% else %}
-        <span>{{ 'top_picks.example_price' | t: amount: example[2] }}</span>
-        {% if example_compare > 0 %}<s>{{ 'top_picks.example_price' | t: amount: example[3] }}</s>{% endif %}
-      {% endif %}
+    <h3 class="picks-card__title"><a href="{{ card_url | escape }}" title="{{ card_title | escape }}" data-card-link>{{ card_title | escape }}</a></h3>
+    <div class="picks-card__price" aria-live="polite" aria-atomic="true">
+      <span data-card-price>{{ card_variant.price | money_with_currency }}</span>
+      <s data-card-compare-price {% unless card_variant.compare_at_price > card_variant.price %}hidden{% endunless %}>{% if card_variant.compare_at_price > card_variant.price %}{{ card_variant.compare_at_price | money_with_currency }}{% endif %}</s>
     </div>
 
-    {% if card_product != blank %}
-      {% if card_product.has_only_default_variant %}
-        {% if card_product.requires_selling_plan %}
-          <a class="picks-card__button" href="{{ card_url }}">{{ 'top_picks.choose_options' | t }}</a>
-        {% else %}
-          {% form 'product', card_product, id: form_id, class: 'picks-card__form' %}
-            <input type="hidden" name="id" value="{{ card_variant.id }}">
-            <input type="hidden" name="quantity" value="1">
-            <button class="picks-card__button" type="submit" {% unless card_variant.available %}disabled{% endunless %}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M3 3h2l3 12h10l3-9H6M10 20h.01M18 20h.01" stroke-linecap="round" /></svg>
-              {% if card_variant.available %}{{ 'top_picks.add_to_cart' | t }}{% else %}{{ 'top_picks.sold_out' | t }}{% endif %}
-            </button>
-          {% endform %}
-        {% endif %}
-      {% else %}
-        <a class="picks-card__button" href="{{ card_url }}">{{ 'top_picks.choose_options' | t }}</a>
-      {% endif %}
+    {% if card_quick_add %}
+      {% form 'product', card_product, id: form_id, class: 'picks-card__form', data-cart-add: 'true', data-variant-available: card_variant.available %}
+        <input type="hidden" name="id" value="{{ card_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button class="picks-card__button" type="submit" data-add-label="{{ 'top_picks.add_to_cart' | t | escape }}" data-sold-out-label="{{ 'top_picks.sold_out' | t | escape }}" {% unless card_variant.available %}disabled{% endunless %}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M3 3h2l3 12h10l3-9H6M10 20h.01M18 20h.01" stroke-linecap="round" /></svg>
+          <span data-card-submit-text>{% if card_variant.available %}{{ 'top_picks.add_to_cart' | t }}{% else %}{{ 'top_picks.sold_out' | t }}{% endif %}</span>
+        </button>
+        <p class="picks-card__error" role="alert" data-cart-error hidden></p>
+      {% endform %}
     {% else %}
-      <a class="picks-card__button" href="{{ card_url }}">{{ 'top_picks.view_product' | t }}</a>
+      <a class="picks-card__button" href="{{ card_url | escape }}" data-card-link>{{ 'top_picks.choose_options' | t }}</a>
     {% endif %}
   </div>
-</article>
+</top-picks-card>

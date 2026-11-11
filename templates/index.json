@@ -43,13 +43,13 @@
       "type": "top-picks",
       "settings": {
         "heading": "Top Picks For You",
-        "promotion": "🔥20% Off with Code 'BFCM2026' !",
+        "promotion": "",
         "product_limit": 8
       },
       "blocks": {
-        "best_sellers": { "type": "category", "settings": { "title": "Best Sellers", "example_group": "best_sellers" } },
-        "new_arrivals": { "type": "category", "settings": { "title": "New Arrivals", "example_group": "new_arrivals" } },
-        "bundle_deals": { "type": "category", "settings": { "title": "Bundle Deals", "example_group": "bundle_deals" } }
+        "best_sellers": { "type": "category", "settings": { "title": "Best Sellers", "collection": "best-sellers" } },
+        "new_arrivals": { "type": "category", "settings": { "title": "New Arrivals", "collection": "new-arrival" } },
+        "bundle_deals": { "type": "category", "settings": { "title": "Bundle Deals", "collection": "bundle-deals" } }
       },
       "block_order": ["best_sellers", "new_arrivals", "bundle_deals"]
     },

@@ -71,10 +71,11 @@
     "promotion": "Promotional text",
     "product_limit": "Products per category",
     "product_collection": "Collection",
+    "product_collection_info": "Displays products in the collection's order. Products must be available to the Online Store.",
     "products": "Products",
     "products_info": "Selected products take priority over the collection.",
     "example_products": "Example products",
-    "example_products_info": "Reference products appear only when no products are selected. Their buttons open the reference store; select your own products to enable cart forms.",
+    "example_products_info": "Select an example product category.",
     "page_margin": "Page margin",
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
@@ -86,16 +87,16 @@
     "transition_speed": "Transition duration"
   },
   "options": {
+    "product_category": {
+      "best_sellers": "Best sellers",
+      "new_arrivals": "New arrivals",
+      "bundle_deals": "Bundle deals"
+    },
     "benefit_icon": {
       "shipping": "Shipping",
       "returns": "Returns",
       "warranty": "Warranty",
       "rewards": "Rewards"
-    },
-    "product_category": {
-      "best_sellers": "Best sellers",
-      "new_arrivals": "New arrivals",
-      "bundle_deals": "Bundle deals"
     },
     "example_image": {
       "none": "None",

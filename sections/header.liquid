@@ -18,11 +18,9 @@
         </a>
       {% endif %}
 
-      <a class="site-header__action" href="{{ routes.cart_url }}" aria-label="{{ 'header.cart' | t: count: cart.item_count | escape }}">
+      <a class="site-header__action" href="{{ routes.cart_url }}" aria-label="{{ 'header.cart' | t: count: cart.item_count | escape }}" aria-haspopup="dialog" aria-controls="CartDrawerDialog" aria-expanded="false" data-cart-open>
         {{ 'icon-cart.svg' | inline_asset_content }}
-        {% if cart.item_count > 0 %}
-          <span class="site-header__count" aria-hidden="true">{{ cart.item_count }}</span>
-        {% endif %}
+        <span class="site-header__count" aria-hidden="true" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
       </a>
     </div>
   </div>

@@ -24,14 +24,13 @@
     "go_to_page": "Go to product page {{ number }}",
     "previous": "Previous products",
     "next": "Next products",
-    "empty": "Select a collection or products to display here.",
-    "rating": "Rated {{ rating }} out of 5, {{ count }} reviews",
-    "new_arrival": "New arrival",
-    "example_price": "${{ amount }} USD",
+    "empty": "No products available in this collection.",
+    "select_collection": "Select a collection for this tab.",
     "add_to_cart": "Add To Cart",
     "sold_out": "Sold out",
     "choose_options": "Choose options",
-    "view_product": "View product"
+    "colors_for": "Colors for {{ product }}",
+    "color_unavailable": "{{ color }} (sold out)"
   },
   "why_choose": {
     "heading": "Why Choose Redragon",
@@ -71,7 +70,24 @@
     "checkout": "Checkout",
     "title": "Cart",
     "update": "Update",
-    "remove": "Remove"
+    "remove": "Remove",
+    "drawer_title": "Shopping cart",
+    "close": "Close cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "product": "Product",
+    "line_total": "Total",
+    "total": "Total",
+    "view_cart": "View cart",
+    "checkout_note": "Taxes, discounts and shipping calculated at checkout.",
+    "quantity_for": "Quantity for {{ product }}",
+    "decrease_quantity": "Decrease quantity for {{ product }}",
+    "increase_quantity": "Increase quantity for {{ product }}",
+    "remove_product": "Remove {{ product }}",
+    "request_error": "Unable to update your cart. Please try again.",
+    "refresh_error": "Your cart was updated, but its contents could not be refreshed. Close and reopen the cart to try again.",
+    "quantity_error": "Enter a whole number of zero or more.",
+    "updated": "Cart updated."
   },
   "customers": {
     "login": {
