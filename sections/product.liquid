@@ -1,50 +1,100 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+<link rel="stylesheet" href="{{ 'section-product.css' | asset_url }}">
+<script src="{{ 'section-product.js' | asset_url }}" defer></script>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+{% assign youtube_video_url = product.metafields.custom.youtube_video.value | strip %}
+{% if youtube_video_url != blank %}
+  <link rel="stylesheet" href="{{ 'vidstack-theme.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'vidstack-video.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'product-video.css' | asset_url }}">
+  <script src="{{ 'product-video.js' | asset_url }}" defer></script>
+{% endif %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
-
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
-
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
-
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
+<product-detail
+  class="product-page full-width"
+  data-section-id="{{ section.id }}"
+  data-loading-message="{{ 'product.loading' | t | escape }}"
+  data-error-message="{{ 'product.selection_error' | t | escape }}"
+>
+  <div class="product-page__container">
+    <nav class="product-page__breadcrumb" aria-label="{{ 'product.breadcrumb' | t | escape }}">
+      <a href="{{ routes.root_url }}">{{ 'header.home' | t }}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{{ routes.all_products_collection_url }}">{{ 'product.products' | t }}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ product.title | escape }}</span>
+    </nav>
+    <div class="product-page__main">
+      {% render 'product-gallery', product: product, section_id: section.id %}
+      {% render 'product-info', product: product, section: section %}
+    </div>
+    <div class="product-page__request" role="status" aria-live="polite" hidden data-product-status></div>
+    <a class="product-page__retry" href="{{ product.url }}" hidden data-product-retry>
+      {{- 'product.open_selection' | t -}}
+    </a>
+    <div class="product-page__details">
+      <nav class="product-page__detail-nav" aria-label="{{ 'product.product_information' | t | escape }}">
+        {% if product.description != blank -%}
+          <a href="#ProductOverview-{{ section.id }}">{{ 'product.overview' | t }}</a>
+        {%- endif %}
+        <a href="#ProductDetails-{{ section.id }}">{{ 'product.details' | t }}</a>
+      </nav>
+      {% if product.description != blank %}
+        <section
+          class="product-page__overview"
+          id="ProductOverview-{{ section.id }}"
+          aria-labelledby="ProductOverviewTitle-{{ section.id }}"
         >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
-
-    <input type="text" name="quantity" min="1" value="1">
-
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+          <h2 id="ProductOverviewTitle-{{ section.id }}">{{ 'product.overview' | t }}</h2>
+          <div class="product-page__rte" data-product-description>{{ product.description }}</div>
+        </section>
+      {% endif %}
+      <section
+        class="product-page__specifications"
+        id="ProductDetails-{{ section.id }}"
+        aria-labelledby="ProductDetailsTitle-{{ section.id }}"
+      >
+        <h2 id="ProductDetailsTitle-{{ section.id }}">{{ 'product.details' | t }}</h2>
+        <dl>
+          <div>
+            <dt>{{ 'product.product_name' | t }}</dt>
+            <dd>{{ product.title | escape }}</dd>
+          </div>
+          {% if product.vendor != blank %}
+            <div>
+              <dt>{{ 'product.brand' | t }}</dt>
+              <dd>{{ product.vendor | escape }}</dd>
+            </div>
+          {% endif %}
+          {% if product.type != blank %}
+            <div>
+              <dt>{{ 'product.category' | t }}</dt>
+              <dd>{{ product.type | escape }}</dd>
+            </div>
+          {% endif %}
+          {% unless product.has_only_default_variant %}
+            {% for option in product.options_with_values %}
+              <div>
+                <dt>{{ option.name | escape }}</dt>
+                <dd>{{ option.values | join: ', ' | escape }}</dd>
+              </div>
+            {% endfor %}
+          {% endunless %}
+        </dl>
+      </section>
+    </div>
+    {% if youtube_video_url != blank %}
+      {% render 'product-video', video_url: youtube_video_url, product: product, section_id: section.id %}
+    {% endif %}
+  </div>
+</product-detail>
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": [],
+  "settings": [
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "t:labels.show_dynamic_checkout", "default": true },
+    { "type": "checkbox", "id": "show_payment_icons", "label": "t:labels.show_payment_icons", "default": true }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

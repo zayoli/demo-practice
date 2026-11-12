@@ -1,9 +1,32 @@
-.search-results {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+.search-page {
+  width: min(1320px, 100%);
+  margin-inline: auto;
 }
-.search-results .prev,
-.search-results .page,
-.search-results .next {
-  grid-column: 1 / -1;
+
+.search-page__form {
+  display: flex;
+  gap: 12px;
+  max-width: 640px;
+  margin-bottom: 32px;
+}
+
+.search-page__form input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #dedede;
+  font-size: 16px;
+}
+
+.search-page__form button {
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 4px;
+  background: #171717;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
 }

@@ -1,42 +1,36 @@
 <link rel="stylesheet" href="{{ 'section-collection.css' | asset_url }}">
+<link rel="stylesheet" href="{{ 'component-catalog.css' | asset_url }}">
+<script src="{{ 'storefront-filters.js' | asset_url }}" defer></script>
 
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
-
-<h1>{{ collection.title }}</h1>
-
-<div class="collection-products">
+<div class="collection-page catalog-page">
+  <h1>{{ collection.title | escape }}</h1>
   {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+    <div class="catalog-layout{% if section.settings.enable_filtering %}{% if collection.filters.size > 0 %} catalog-layout--filtered{% endif %}{% endif %}">
+      {% if section.settings.enable_filtering %}
+        {% render 'storefront-filters', results: collection, section_id: section.id %}
+      {% endif %}
+      <div class="catalog-content">
+        <p class="catalog-count">{{ 'filters.product_count' | t: count: collection.products_count }}</p>
+        <div class="collection-products catalog-grid">
+          {% for product in collection.products %}
+            {% render 'catalog-card', item: product %}
+          {% else %}
+            <p class="catalog-empty">{{ 'filters.no_products' | t }}</p>
+          {% endfor %}
         </div>
+        {% if paginate.pages > 1 %}
+          <nav class="catalog-pagination" aria-label="{{ 'filters.pagination' | t | escape }}">
+            {{ paginate | default_pagination }}
+          </nav>
+        {% endif %}
       </div>
-    {% endfor %}
-
-    {{ paginate | default_pagination }}
+    </div>
   {% endpaginate %}
 </div>
 
 {% schema %}
 {
   "name": "t:general.collection",
-  "settings": []
+  "settings": [{ "type": "checkbox", "id": "enable_filtering", "label": "t:labels.enable_filtering", "default": true }]
 }
 {% endschema %}

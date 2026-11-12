@@ -36,6 +36,23 @@
     "heading": "Why Choose Redragon",
     "go_to_page": "Go to benefit page {{ number }}"
   },
+  "filters": {
+    "heading": "Filters",
+    "apply": "Apply filters",
+    "active": "Active filters",
+    "clear_all": "Clear all",
+    "remove": "Remove {{ value }}",
+    "from": "From",
+    "to": "To",
+    "currency": "Currency: {{ currency }}",
+    "price_error": "The maximum price must be greater than or equal to the minimum price.",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "no_products": "No products match these filters. Try removing a filter.",
+    "pagination": "Pagination"
+  },
   "header": {
     "home": "Home",
     "shop": "Shop all",
@@ -88,6 +105,44 @@
     "refresh_error": "Your cart was updated, but its contents could not be refreshed. Close and reopen the cart to try again.",
     "quantity_error": "Enter a whole number of zero or more.",
     "updated": "Cart updated."
+  },
+  "product": {
+    "breadcrumb": "Breadcrumb",
+    "products": "Products",
+    "gallery": "Product media gallery",
+    "thumbnails": "Product media thumbnails",
+    "view_media": "View product media {{ number }}",
+    "zoom_image": "Enlarge product image {{ number }}",
+    "zoomed_image": "Enlarged product image",
+    "close_image": "Close image",
+    "product_information": "Product information",
+    "overview": "Overview",
+    "details": "Product details",
+    "video_heading": "Product video",
+    "video_title": "{{ product }} — product video",
+    "video_loading": "Loading video player…",
+    "video_error": "The video could not load. You can watch it on YouTube below.",
+    "video_watch_youtube": "Watch on YouTube",
+    "product_name": "Product",
+    "brand": "Brand",
+    "category": "Category",
+    "save": "Save",
+    "taxes_included": "Taxes included. Shipping calculated at checkout.",
+    "unavailable": "Unavailable combination",
+    "in_stock": "In stock",
+    "option_unavailable": "(Unavailable with the selected options)",
+    "quantity": "Quantity",
+    "minimum_quantity": "Minimum: {{ count }}",
+    "maximum_quantity": "Maximum: {{ count }}",
+    "quantity_increment": "Increments of {{ count }}",
+    "in_cart": "({{ count }} in cart)",
+    "sku": "SKU",
+    "barcode": "Barcode",
+    "weight": "Weight",
+    "loading": "Updating your selection…",
+    "selection_error": "Unable to update this option. Please try again or open the selected option below.",
+    "open_selection": "Open selected option",
+    "selling_plan_required": "Subscription plan required"
   },
   "customers": {
     "login": {

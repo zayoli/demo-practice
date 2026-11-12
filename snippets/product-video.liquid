@@ -1,0 +1,27 @@
+{% doc %}
+  Renders a product YouTube video using the external Vidstack player.
+
+  @param {string} video_url - The product's YouTube URL metafield value.
+  @param {product} product - The product associated with the video.
+  @param {string} section_id - The section ID used for the heading.
+{% enddoc %}
+
+<section class="product-video" aria-labelledby="ProductVideoTitle-{{ section_id }}">
+  <h2 id="ProductVideoTitle-{{ section_id }}">{{ 'product.video_heading' | t }}</h2>
+  <product-video
+    data-video-url="{{ video_url | escape }}"
+    data-video-title="{{ 'product.video_title' | t: product: product.title | escape }}"
+  >
+    <div class="product-video__player" data-video-player></div>
+    <p class="product-video__status" role="status" data-video-loading>
+      {{ 'product.video_loading' | t }}
+    </p>
+    <p class="product-video__status" role="status" data-video-error hidden>
+      {{ 'product.video_error' | t }}
+    </p>
+    <a class="product-video__link" href="{{ video_url | escape }}" target="_blank" rel="noopener noreferrer">
+      {{ 'product.video_watch_youtube' | t }}
+      <span aria-hidden="true">↗</span>
+    </a>
+  </product-video>
+</section>

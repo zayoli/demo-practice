@@ -1,0 +1,169 @@
+{% doc %}
+  Renders the filters configured in Shopify Search & Discovery.
+
+  @param {object} results - The current collection or search object.
+  @param {string} section_id - The section ID used for unique form controls.
+  @param {boolean} [is_search] - Preserves the query and result types for search pages.
+{% enddoc %}
+
+{% liquid
+  assign active_count = 0
+  assign current_sort = results.sort_by | default: results.default_sort_by
+  assign encoded_sort = current_sort | url_encode
+  for filter in results.filters
+    assign active_count = active_count | plus: filter.active_values.size
+    if filter.type == 'price_range'
+      if filter.min_value.value != null or filter.max_value.value != null
+        assign active_count = active_count | plus: 1
+      endif
+    endif
+  endfor
+  if is_search
+    assign form_url = routes.search_url
+    assign encoded_terms = results.terms | url_encode
+    assign search_types = results.types | join: ','
+    assign encoded_types = search_types | url_encode
+  else
+    assign form_url = results.url
+  endif
+%}
+{% capture clear_url %}{{ form_url }}?sort_by={{ encoded_sort }}{% if is_search %}&q={{ encoded_terms }}&type={{ encoded_types }}{% endif %}{% endcapture %}
+
+{% if results.filters.size > 0 %}
+  <storefront-filters class="catalog-filters" data-price-error="{{ 'filters.price_error' | t | escape }}">
+    <details class="catalog-filters__panel" open data-filter-panel>
+      <summary class="catalog-filters__heading">
+        {{ 'filters.heading' | t }}
+        {% if active_count > 0 -%}
+          <span>({{ active_count }})</span>
+        {%- endif %}
+        <span class="catalog-filters__toggle" aria-hidden="true">⌄</span>
+      </summary>
+      <form class="catalog-filters__form" action="{{ form_url }}" method="get">
+        {% if is_search %}
+          <input type="hidden" name="q" value="{{ results.terms | escape }}">
+          <input type="hidden" name="type" value="{{ search_types | escape }}">
+        {% endif %}
+        {% if current_sort != blank %}
+          <input type="hidden" name="sort_by" value="{{ current_sort | escape }}">
+        {% endif %}
+        {% for filter in results.filters %}
+          {% assign filter_index = forloop.index %}
+          <details class="catalog-filters__group" open>
+            <summary>
+              {{ filter.label | escape }}
+              <span aria-hidden="true">⌄</span>
+            </summary>
+            {% case filter.type %}
+              {% when 'boolean', 'list' %}
+                <ul class="catalog-filters__values" role="list">
+                  {% for filter_value in filter.values %}
+                    <li>
+                      <label
+                        class="catalog-filters__value"
+                        for="Filter-{{ section_id }}-{{ filter_index }}-{{ forloop.index }}"
+                      >
+                        <input
+                          type="checkbox"
+                          id="Filter-{{ section_id }}-{{ filter_index }}-{{ forloop.index }}"
+                          name="{{ filter_value.param_name | escape }}"
+                          value="{{ filter_value.value | escape }}"
+                          {% if filter_value.active %}
+                            checked
+                          {% endif %}
+                          {% if filter_value.count == 0 %}
+                            {%- unless filter_value.active %}disabled{% endunless -%}
+                          {% endif %}
+                        >
+                        <span>{{ filter_value.label | escape }}</span>
+                        <span class="catalog-filters__count">({{ filter_value.count }})</span>
+                      </label>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% when 'price_range' %}
+                <fieldset class="catalog-filters__price" data-price-range>
+                  <legend>{{ 'filters.currency' | t: currency: cart.currency.iso_code }}</legend>
+                  <div>
+                    <label for="FilterMin-{{ section_id }}-{{ filter_index }}">{{ 'filters.from' | t }}</label>
+                    <input
+                      type="number"
+                      id="FilterMin-{{ section_id }}-{{ filter_index }}"
+                      name="{{ filter.min_value.param_name | escape }}"
+                      {% if filter.min_value.value != null %}
+                        value="{{ filter.min_value.value | divided_by: 100.0 }}"
+                      {% endif %}
+                      placeholder="0"
+                      min="0"
+                      step="any"
+                      inputmode="decimal"
+                      data-price-min
+                    >
+                  </div>
+                  <div>
+                    <label for="FilterMax-{{ section_id }}-{{ filter_index }}">{{ 'filters.to' | t }}</label>
+                    <input
+                      type="number"
+                      id="FilterMax-{{ section_id }}-{{ filter_index }}"
+                      name="{{ filter.max_value.param_name | escape }}"
+                      {% if filter.max_value.value != null %}
+                        value="{{ filter.max_value.value | divided_by: 100.0 }}"
+                      {% endif %}
+                      placeholder="{{ filter.range_max | divided_by: 100.0 }}"
+                      min="0"
+                      step="any"
+                      inputmode="decimal"
+                      data-price-max
+                    >
+                  </div>
+                </fieldset>
+            {% endcase %}
+          </details>
+        {% endfor %}
+        <button class="catalog-filters__apply" type="submit">{{ 'filters.apply' | t }}</button>
+      </form>
+    </details>
+    {% if active_count > 0 %}
+      <div class="catalog-filters__active" aria-label="{{ 'filters.active' | t | escape }}" role="group">
+        <a class="catalog-filters__clear" href="{{ clear_url | escape }}">{{ 'filters.clear_all' | t }}</a>
+        {% for filter in results.filters %}
+          {% if filter.type == 'price_range' %}
+            {% if filter.min_value.value != null or filter.max_value.value != null %}
+              {% liquid
+                assign minimum_price = filter.min_value.value | default: 0 | money
+                assign maximum_price = filter.max_value.value | default: filter.range_max | money
+                capture price_label
+                  echo filter.label
+                  echo ': '
+                  echo minimum_price
+                  echo ' – '
+                  echo maximum_price
+                endcapture
+              %}
+              <a
+                class="catalog-filters__chip"
+                href="{{ filter.url_to_remove | escape }}"
+                aria-label="{{ 'filters.remove' | t: value: price_label | escape }}"
+              >
+                {{ price_label | escape -}}
+                <span aria-hidden="true">×</span>
+              </a>
+            {% endif %}
+          {% else %}
+            {% for filter_value in filter.active_values %}
+              {% capture active_label %}{{ filter.label }}: {{ filter_value.label }}{% endcapture %}
+              <a
+                class="catalog-filters__chip"
+                href="{{ filter_value.url_to_remove | escape }}"
+                aria-label="{{ 'filters.remove' | t: value: active_label | escape }}"
+              >
+                {{ active_label | escape -}}
+                <span aria-hidden="true">×</span>
+              </a>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </storefront-filters>
+{% endif %}

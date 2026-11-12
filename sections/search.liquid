@@ -1,60 +1,51 @@
 <link rel="stylesheet" href="{{ 'section-search.css' | asset_url }}">
+<link rel="stylesheet" href="{{ 'component-catalog.css' | asset_url }}">
+<script src="{{ 'storefront-filters.js' | asset_url }}" defer></script>
 
-{% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
-{% endcomment %}
-
-<h1>{{ 'search.title' | t }}</h1>
-
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
-
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
-
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
-            </div>
+<div class="search-page catalog-page">
+  <h1>{{ 'search.title' | t }}</h1>
+  <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+    <input
+      type="search"
+      name="q"
+      value="{{ search.terms | escape }}"
+      aria-label="{{ 'search.placeholder' | t | escape }}"
+      placeholder="{{ 'search.placeholder' | t }}"
+    >
+    <button type="submit">{{ 'search.submit' | t }}</button>
+  </form>
+  {% if search.performed %}
+    {% assign escaped_search_terms = search.terms | escape %}
+    {% paginate search.results by 20 %}
+      <div class="catalog-layout{% if section.settings.enable_filtering %}{% if search.filters.size > 0 %} catalog-layout--filtered{% endif %}{% endif %}">
+        {% if section.settings.enable_filtering %}
+          {% render 'storefront-filters', results: search, section_id: section.id, is_search: true %}
+        {% endif %}
+        <div class="catalog-content">
+          <p class="catalog-count">
+            {{ 'search.results_for_html' | t: terms: escaped_search_terms, count: search.results_count }}
+          </p>
+          <div class="search-results catalog-grid">
+            {% for result in search.results %}
+              {% render 'catalog-card', item: result %}
+            {% else %}
+              <p class="catalog-empty">{{ 'search.no_results_html' | t: terms: escaped_search_terms }}</p>
+            {% endfor %}
           </div>
-        {% endfor %}
-
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
-    </div>
+          {% if paginate.pages > 1 %}
+            <nav class="catalog-pagination" aria-label="{{ 'filters.pagination' | t | escape }}">
+              {{ paginate | default_pagination }}
+            </nav>
+          {% endif %}
+        </div>
+      </div>
+    {% endpaginate %}
   {% endif %}
-{% endif %}
+</div>
 
 {% schema %}
 {
   "name": "t:general.search",
-  "settings": []
+  "settings": [{ "type": "checkbox", "id": "enable_filtering", "label": "t:labels.enable_filtering", "default": true }]
 }
 {% endschema %}

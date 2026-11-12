@@ -1,0 +1,75 @@
+{% doc %}
+  Renders product option links with server-rendered selection and availability.
+
+  @param {product} product - The current product and its contextual option values.
+{% enddoc %}
+
+{% unless product.has_only_default_variant %}
+  <div class="product-info__options">
+    {% for option in product.options_with_values %}
+      {% liquid
+        assign option_name = option.name | downcase
+        assign is_color = false
+        if option_name == 'color' or option_name == 'colour'
+          assign is_color = true
+        elsif option_name == '颜色' or option_name == '顏色'
+          assign is_color = true
+        endif
+      %}
+      {% capture option_selection %}
+        {%- for other_option in product.options_with_values -%}
+          {%- if other_option.position == option.position -%}
+            option-value-id
+          {%- else -%}
+            {%- assign selected_value = other_option.values | where: 'selected', true | first -%}
+            {{- selected_value.id -}}
+          {%- endif -%}
+          {%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      {% endcapture %}
+      <fieldset class="product-option">
+        <legend>
+          {{ option.name | escape }}: <span>{{ option.selected_value | escape }}</span>
+        </legend>
+        <div class="product-option__values">
+          {% for option_value in option.values %}
+            {% liquid
+              assign selection = option_selection | strip | replace: 'option-value-id', option_value.id
+              assign option_url = product.url | append: '?option_values=' | append: selection
+              assign swatch_image = option_value.swatch.image
+              assign swatch_color = option_value.swatch.color | default: option_value.name
+              if is_color
+                assign swatch_image = swatch_image | default: option_value.variant.featured_image
+              endif
+            %}
+            <a
+              class="product-option__value{% if is_color %} product-option__value--color{% endif %}{% unless option_value.available %} product-option__value--unavailable{% endunless %}"
+              href="{{ option_url | escape }}"
+              role="button"
+              aria-pressed="{{ option_value.selected }}"
+              data-product-option
+              data-option-id="{{ option_value.id }}"
+              data-swatch-color="{{ swatch_color | escape }}"
+            >
+              {% if is_color %}
+                <span class="product-option__swatch" aria-hidden="true">
+                  {% if swatch_image != blank -%}
+                    {{-
+                      swatch_image
+                      | image_url: width: 120
+                      | image_tag: loading: 'lazy', widths: '60, 120', sizes: '60px', alt: ''
+                    -}}
+                  {%- endif %}
+                </span>
+              {% endif %}
+              <span>{{ option_value.name | escape }}</span>
+              {% unless option_value.available -%}
+                <span class="product-page__visually-hidden">{{ 'product.option_unavailable' | t }}</span>
+              {%- endunless %}
+            </a>
+          {% endfor %}
+        </div>
+      </fieldset>
+    {% endfor %}
+  </div>
+{% endunless %}

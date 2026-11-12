@@ -1,0 +1,30 @@
+{% doc %}
+  Renders a product, article, or page in a catalog grid.
+
+  @param {object} item - The collection product or search result.
+{% enddoc %}
+
+{% assign card_image = item.featured_image | default: item.image %}
+<article class="catalog-card">
+  <a class="catalog-card__image" href="{{ item.url }}" aria-label="{{ item.title | escape }}">
+    {% if card_image %}
+      {{
+        card_image
+        | image_url: width: 720
+        | image_tag:
+          loading: 'lazy',
+          widths: '180, 360, 540, 720',
+          sizes: '(max-width: 749px) 45vw, (max-width: 1099px) 30vw, 300px',
+          alt: card_image.alt
+      }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'catalog-card__placeholder' }}
+    {% endif %}
+  </a>
+  <h2 class="catalog-card__title">
+    <a href="{{ item.url }}">{{ item.title | escape }}</a>
+  </h2>
+  {% if item.price != null %}
+    <p class="catalog-card__price">{{ item.price | money_with_currency }}</p>
+  {% endif %}
+</article>

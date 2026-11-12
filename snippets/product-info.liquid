@@ -1,0 +1,206 @@
+{% doc %}
+  Renders the selected product variant, option picker, and cart drawer compatible form.
+
+  @param {product} product - The current product.
+  @param {section} section - The product section and its display settings.
+{% enddoc %}
+
+{% liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign custom_introduction = product.metafields.custom.product_description.value | strip
+  assign form_id = 'ProductForm-' | append: section.id
+  assign can_purchase = false
+  if current_variant.available
+    unless product.requires_selling_plan
+      assign can_purchase = true
+    endunless
+  endif
+%}
+
+<div
+  class="product-info"
+  data-product-info
+  data-media-id="{{ current_variant.featured_media.id }}"
+  data-variant-id="{{ current_variant.id }}"
+>
+  {% if product.vendor != blank %}
+    <p class="product-info__brand">{{ product.vendor | escape }}</p>
+  {% endif %}
+  <h1 class="product-info__title">{{ product.title | escape }}</h1>
+  {% if product.type != blank %}
+    <p class="product-info__category">{{ product.type | escape }}</p>
+  {% endif %}
+  <div class="product-info__price" aria-live="polite">
+    {% if current_variant != blank %}
+      <span class="product-info__current-price">{{ current_variant.price | money_with_currency }}</span>
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <s class="product-info__compare-price">{{ current_variant.compare_at_price | money_with_currency }}</s>
+        <span class="product-info__sale">
+          {{- 'product.save' | t }}
+          {{
+            current_variant.compare_at_price
+            | minus: current_variant.price
+            | times: 100.0
+            | divided_by: current_variant.compare_at_price
+            | round
+          -}}
+          %</span
+        >
+      {% endif %}
+      {% if current_variant.unit_price_measurement -%}
+        <span class="product-info__unit-price">
+          {{- current_variant.unit_price | unit_price_with_measurement: current_variant.unit_price_measurement -}}
+        </span>
+      {%- endif %}
+    {% else %}
+      <span class="product-info__current-price">{{ 'product.unavailable' | t }}</span>
+    {% endif %}
+  </div>
+  <p class="product-info__tax">
+    {% if cart.taxes_included %}{{ 'product.taxes_included' | t }}{% else %}{{ 'cart.checkout_note' | t }}{% endif %}
+  </p>
+  {% render 'product-option-picker', product: product %}
+  <p class="product-info__availability{% unless current_variant.available %} product-info__availability--unavailable{% endunless %}">
+    {% if current_variant == blank -%}
+      {{- 'product.unavailable' | t -}}
+    {%- elsif current_variant.available -%}
+      {{- 'product.in_stock' | t -}}
+    {%- else -%}
+      {{- 'top_picks.sold_out' | t -}}
+    {%- endif %}
+  </p>
+  {% form 'product',
+    product,
+    id: form_id,
+    class: 'product-info__form',
+    data-cart-add: '',
+    data-variant-available: can_purchase
+  %}
+    <input
+      type="hidden"
+      name="id"
+      value="{{ current_variant.id }}"
+      {% unless can_purchase %}
+        disabled
+      {% endunless %}
+    >
+    <div class="product-info__quantity-heading">
+      <label for="ProductQuantity-{{ section.id }}">{{ 'product.quantity' | t }}</label>
+      {% if current_variant != blank %}
+        {% assign cart_quantity = cart | item_count_for_variant: current_variant.id %}
+        {% if cart_quantity > 0 -%}
+          <span>{{ 'product.in_cart' | t: count: cart_quantity }}</span>
+        {%- endif %}
+      {% endif %}
+    </div>
+    <div class="product-info__quantity">
+      <button
+        type="button"
+        data-product-quantity="decrease"
+        aria-label="{{ 'cart.decrease_quantity' | t: product: product.title | escape }}"
+        {% unless can_purchase %}
+          disabled
+        {% endunless %}
+      >
+        −
+      </button>
+      <input
+        id="ProductQuantity-{{ section.id }}"
+        type="number"
+        name="quantity"
+        inputmode="numeric"
+        min="{{ current_variant.quantity_rule.min | default: 1 }}"
+        step="{{ current_variant.quantity_rule.increment | default: 1 }}"
+        {% if current_variant.quantity_rule.max != blank %}
+          max="{{ current_variant.quantity_rule.max }}"
+        {% endif %}
+        value="{{ current_variant.quantity_rule.min | default: 1 }}"
+        {% unless can_purchase %}
+          disabled
+        {% endunless %}
+      >
+      <button
+        type="button"
+        data-product-quantity="increase"
+        aria-label="{{ 'cart.increase_quantity' | t: product: product.title | escape }}"
+        {% unless can_purchase %}
+          disabled
+        {% endunless %}
+      >
+        +
+      </button>
+    </div>
+    <div class="product-info__quantity-rules">
+      {% if current_variant.quantity_rule.min > 1 -%}
+        <span>{{ 'product.minimum_quantity' | t: count: current_variant.quantity_rule.min }}</span>
+      {%- endif %}
+      {% if current_variant.quantity_rule.increment > 1 -%}
+        <span>{{ 'product.quantity_increment' | t: count: current_variant.quantity_rule.increment }}</span>
+      {%- endif %}
+      {% if current_variant.quantity_rule.max != blank -%}
+        <span>{{ 'product.maximum_quantity' | t: count: current_variant.quantity_rule.max }}</span>
+      {%- endif %}
+    </div>
+    {% if custom_introduction != blank %}
+      <p class="product-info__introduction">{{ custom_introduction | escape }}</p>
+    {% endif %}
+    <button
+      class="product-info__add"
+      type="submit"
+      {% unless can_purchase %}
+        disabled
+      {% endunless %}
+    >
+      {% if current_variant == blank -%}
+        {{- 'product.unavailable' | t -}}
+      {%- elsif product.requires_selling_plan -%}
+        {{- 'product.selling_plan_required' | t -}}
+      {%- elsif current_variant.available -%}
+        {{- 'top_picks.add_to_cart' | t -}}
+      {%- else -%}
+        {{- 'top_picks.sold_out' | t -}}
+      {%- endif %}
+    </button>
+    <p class="product-info__error" role="alert" data-cart-error hidden></p>
+    {% if section.settings.show_dynamic_checkout %}
+      {% if can_purchase %}
+        <div class="product-info__checkout">{{ form | payment_button }}</div>
+      {% endif %}
+    {% endif %}
+    {{ form.errors | default_errors }}
+  {% endform %}
+  {% if current_variant.sku != blank %}
+    <p class="product-info__sku">{{ 'product.sku' | t }}: {{ current_variant.sku | escape }}</p>
+  {% endif %}
+  {% if current_variant.barcode != blank %}
+    <p class="product-info__sku">{{ 'product.barcode' | t }}: {{ current_variant.barcode | escape }}</p>
+  {% endif %}
+  {% if current_variant.weight > 0 %}
+    <p class="product-info__sku">{{ 'product.weight' | t }}: {{ current_variant.weight | weight_with_unit }}</p>
+  {% endif %}
+  {% if shop.shipping_policy.body != blank or shop.refund_policy.body != blank %}
+    <div class="product-info__policies">
+      {% if shop.shipping_policy.body != blank -%}
+        <a href="{{ shop.shipping_policy.url }}">
+          {{- shop.shipping_policy.title | escape }}
+          <span aria-hidden="true">↗</span></a
+        >
+      {%- endif %}
+      {% if shop.refund_policy.body != blank -%}
+        <a href="{{ shop.refund_policy.url }}">
+          {{- shop.refund_policy.title | escape }}
+          <span aria-hidden="true">↗</span></a
+        >
+      {%- endif %}
+    </div>
+  {% endif %}
+  {% if section.settings.show_payment_icons %}
+    {% if shop.enabled_payment_types.size > 0 %}
+      <ul class="product-info__payments" role="list" aria-label="{{ 'footer.payment_methods' | t | escape }}">
+        {% for type in shop.enabled_payment_types %}
+          <li>{{ type | payment_type_svg_tag }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+</div>
