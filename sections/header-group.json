@@ -13,7 +13,9 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "menu_collections": ["new-arrival", "bundle-deals", "best-sellers"]
+      }
     }
   },
   "order": [

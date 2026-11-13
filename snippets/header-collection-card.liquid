@@ -1,0 +1,27 @@
+{% doc %}
+  Renders a collection card in the header menu.
+
+  @param {collection} collection - The collection to display.
+{% enddoc %}
+
+{% if collection != blank %}
+  {% assign collection_image = collection.image | default: collection.products.first.featured_image %}
+  <li>
+    <a class="site-header__collection-card" href="{{ collection.url }}">
+      <span class="site-header__collection-image">
+        {% if collection_image %}
+          {{
+            collection_image
+            | image_url: width: 640
+            | image_tag:
+              loading: 'lazy',
+              widths: '240, 400, 640',
+              sizes: '160px',
+              alt: collection_image.alt
+          }}
+        {% endif %}
+      </span>
+      <span class="site-header__collection-title">{{ collection.title | escape }}</span>
+    </a>
+  </li>
+{% endif %}

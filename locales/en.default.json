@@ -54,6 +54,8 @@
     "pagination": "Pagination"
   },
   "header": {
+    "shop_by_category": "Shop by category",
+    "view_all_products": "View All Products",
     "home": "Home",
     "shop": "Shop all",
     "collections": "Collections",

@@ -28,8 +28,40 @@
   <nav class="site-header__nav" aria-label="{{ 'header.navigation' | t | escape }}">
     <ul class="site-header__links" role="list">
       {% for link in section.settings.menu.links %}
-        <li>
-          <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+        {% assign menu_link_title = link.title | downcase %}
+        <li class="site-header__item{% if menu_link_title == 'main menu' %} site-header__item--collections{% endif %}">
+          <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>
+            {{ link.title | escape }}
+            {% if menu_link_title == 'main menu' %}
+              <svg class="site-header__caret" viewBox="0 0 10 6" fill="none" aria-hidden="true" focusable="false">
+                <path d="m1 1 4 4 4-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            {% endif %}
+          </a>
+          {% if menu_link_title == 'main menu' %}
+            {% assign menu_collections = section.settings.menu_collections %}
+            {% assign menu_collection_handles = 'new-arrival,bundle-deals,best-sellers' | split: ',' %}
+            <div class="site-header__mega-menu">
+              <div class="site-header__mega-content">
+                <div class="site-header__collection-heading">
+                  <h2>{{ 'header.shop_by_category' | t }}</h2>
+                  <a class="site-header__view-all" href="{{ routes.all_products_collection_url }}">{{ 'header.view_all_products' | t }}</a>
+                </div>
+                <ul class="site-header__collection-list" role="list">
+                  {% if menu_collections != blank %}
+                    {% for collection in menu_collections %}
+                      {% render 'header-collection-card', collection: collection %}
+                    {% endfor %}
+                  {% else %}
+                    {% for collection_handle in menu_collection_handles %}
+                      {% assign collection = collections[collection_handle] %}
+                      {% render 'header-collection-card', collection: collection %}
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
         </li>
       {% else %}
         <li><a href="{{ routes.root_url }}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>{{ 'header.home' | t }}</a></li>
@@ -39,6 +71,7 @@
     </ul>
   </nav>
 </header>
+
 
 {% schema %}
 {
@@ -50,6 +83,12 @@
       "id": "menu",
       "label": "t:labels.menu",
       "default": "main-menu"
+    },
+    {
+      "type": "collection_list",
+      "id": "menu_collections",
+      "label": "t:labels.menu_collections",
+      "limit": 3
     }
   ]
 }
