@@ -15,7 +15,44 @@
       "type": "header",
       "settings": {
         "menu_collections": ["new-arrival", "bundle-deals", "best-sellers"]
-      }
+      },
+      "blocks": {
+        "new_arrival_promo": {
+          "type": "menu_promo",
+          "settings": {
+            "collection": "new-arrival",
+            "collection_handle": "new-arrival",
+            "heading": "New Arrivals",
+            "description": "Discover the latest products.",
+            "link_label": "Shop new arrivals"
+          }
+        },
+        "bundle_deals_promo": {
+          "type": "menu_promo",
+          "settings": {
+            "collection": "bundle-deals",
+            "collection_handle": "bundle-deals",
+            "heading": "Bundle Deals",
+            "description": "Explore products bundled together.",
+            "link_label": "Shop bundle deals"
+          }
+        },
+        "best_sellers_promo": {
+          "type": "menu_promo",
+          "settings": {
+            "collection": "best-sellers",
+            "collection_handle": "best-sellers",
+            "heading": "Best Sellers",
+            "description": "Browse popular products.",
+            "link_label": "Shop best sellers"
+          }
+        }
+      },
+      "block_order": [
+        "new_arrival_promo",
+        "bundle_deals_promo",
+        "best_sellers_promo"
+      ]
     }
   },
   "order": [

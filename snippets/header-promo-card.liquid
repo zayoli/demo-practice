@@ -1,0 +1,45 @@
+{% doc %}
+  Renders a configurable promotional card in the header mega menu.
+
+  @param {block} block - The menu promo block.
+{% enddoc %}
+
+{% assign promo_collection = block.settings.collection %}
+{% if promo_collection == blank and block.settings.collection_handle != blank %}
+  {% assign promo_collection = collections[block.settings.collection_handle] %}
+{% endif %}
+{% assign promo_image = block.settings.image | default: promo_collection.image | default: promo_collection.products.first.featured_image %}
+{% assign promo_url = block.settings.link | default: promo_collection.url | default: routes.all_products_collection_url %}
+
+<a
+  class="site-header__promo-card"
+  href="{{ promo_url }}"
+  style="--promo-background: {{ block.settings.background }};"
+  {{ block.shopify_attributes }}
+>
+  <span class="site-header__promo-copy">
+    {% if block.settings.heading != blank %}
+      <strong>{{ block.settings.heading | escape }}</strong>
+    {% endif %}
+    {% if block.settings.description != blank %}
+      <span>{{ block.settings.description | escape | newline_to_br }}</span>
+    {% endif %}
+    {% if block.settings.link_label != blank %}
+      <span class="site-header__promo-link">{{ block.settings.link_label | escape }}</span>
+    {% endif %}
+  </span>
+  {% if promo_image != blank %}
+    <span class="site-header__promo-image">
+      {{
+        promo_image
+        | image_url: width: 760
+        | image_tag:
+          loading: 'lazy',
+          widths: '400, 600, 760',
+          sizes: '(max-width: 600px) 100vw, 360px',
+          alt: promo_image.alt
+      }}
+    </span>
+  {% endif %}
+</a>
+

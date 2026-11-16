@@ -43,22 +43,36 @@
             {% assign menu_collection_handles = 'new-arrival,bundle-deals,best-sellers' | split: ',' %}
             <div class="site-header__mega-menu">
               <div class="site-header__mega-content">
-                <div class="site-header__collection-heading">
-                  <h2>{{ 'header.shop_by_category' | t }}</h2>
-                  <a class="site-header__view-all" href="{{ routes.all_products_collection_url }}">{{ 'header.view_all_products' | t }}</a>
-                </div>
-                <ul class="site-header__collection-list" role="list">
-                  {% if menu_collections != blank %}
-                    {% for collection in menu_collections %}
-                      {% render 'header-collection-card', collection: collection %}
-                    {% endfor %}
-                  {% else %}
-                    {% for collection_handle in menu_collection_handles %}
-                      {% assign collection = collections[collection_handle] %}
-                      {% render 'header-collection-card', collection: collection %}
-                    {% endfor %}
+                <div class="site-header__mega-layout">
+                  <div class="site-header__category-panel">
+                    <div class="site-header__collection-heading">
+                      <h2>{{ 'header.shop_by_category' | t }}</h2>
+                      <a class="site-header__view-all" href="{{ routes.all_products_collection_url }}">{{ 'header.view_all_products' | t }}</a>
+                    </div>
+                    <ul class="site-header__collection-list" role="list">
+                      {% if menu_collections != blank %}
+                        {% for collection in menu_collections %}
+                          {% render 'header-collection-card', collection: collection %}
+                        {% endfor %}
+                      {% else %}
+                        {% for collection_handle in menu_collection_handles %}
+                          {% assign collection = collections[collection_handle] %}
+                          {% render 'header-collection-card', collection: collection %}
+                        {% endfor %}
+                      {% endif %}
+                    </ul>
+                  </div>
+                  {% if section.blocks != blank %}
+                    <aside class="site-header__promo-panel" aria-label="{{ 'header.promotions' | t }}">
+                      <h2>{{ 'header.promotions' | t }}</h2>
+                      <div class="site-header__promo-list">
+                        {% for block in section.blocks %}
+                          {% render 'header-promo-card', block: block %}
+                        {% endfor %}
+                      </div>
+                    </aside>
                   {% endif %}
-                </ul>
+                </div>
               </div>
             </div>
           {% endif %}
@@ -89,6 +103,60 @@
       "id": "menu_collections",
       "label": "t:labels.menu_collections",
       "limit": 3
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu_promo",
+      "name": "t:general.menu_promo",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.image"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:labels.menu_promo_collection"
+        },
+        {
+          "type": "text",
+          "id": "collection_handle",
+          "label": "t:labels.menu_promo_collection_handle",
+          "info": "t:labels.menu_promo_collection_handle_info"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.heading",
+          "default": "Featured collection"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "t:labels.description",
+          "default": "Explore our latest products."
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "t:labels.button_label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.button_link"
+        },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "t:labels.background",
+          "default": "#f5f5f7"
+        }
+      ]
     }
   ]
 }
