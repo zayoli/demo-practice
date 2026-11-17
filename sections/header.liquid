@@ -62,9 +62,17 @@
           {% if is_style_product_menu %}
             {% assign menu_collections = section.settings.menu_collections %}
             {% assign menu_collection_handles = 'new-arrival,bundle-deals,best-sellers' | split: ',' %}
+            {% assign has_adv_blocks = false %}
+            {% for block in section.blocks %}
+              {% if block.type == 'adv' %}
+                {% if block.settings.image != blank and block.settings.link != blank %}
+                  {% assign has_adv_blocks = true %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
             <div class="site-header__mega-menu">
               <div class="site-header__mega-content">
-                <div class="site-header__mega-layout">
+                <div class="site-header__mega-layout{% unless has_adv_blocks %} site-header__mega-layout--no-adv{% endunless %}">
                   <div class="site-header__category-panel">
                     <div class="site-header__collection-heading">
                       <h2>{{ 'header.shop_by_category' | t }}</h2>
@@ -83,21 +91,26 @@
                       {% endif %}
                     </ul>
                   </div>
-                  {% if section.blocks != blank %}
-                    <aside class="site-header__promo-panel" aria-label="{{ 'header.promotions' | t }}">
-                      <h2>{{ 'header.promotions' | t }}</h2>
-                      <div class="site-header__promo-list">
+                  {% if has_adv_blocks %}
+                    <aside class="site-header__adv-panel" aria-label="{{ 'header.advertisements' | t }}">
+                      <div class="site-header__adv-list">
                         {% for block in section.blocks %}
-                          {% case block.type %}
-                            {% when 'menu_promo' %}
-                              {% render 'header-promo-card', block: block %}
-                            {% when 'adv' %}
-                              {% if block.settings.image != blank and block.settings.link != blank %}
-                                <a
-                                  class="site-header__adv-card"
-                                  href="{{ block.settings.link }}"
-                                  {{ block.shopify_attributes }}
-                                >
+                          {% if block.type == 'adv' %}
+                            {% if block.settings.image != blank and block.settings.link != blank %}
+                              <a
+                                class="site-header__adv-card"
+                                href="{{ block.settings.link }}"
+                                {{ block.shopify_attributes }}
+                              >
+                                <span class="site-header__adv-copy">
+                                  {% if block.settings.heading != blank %}
+                                    <strong>{{ block.settings.heading | escape }}</strong>
+                                  {% endif %}
+                                  {% if block.settings.description != blank %}
+                                    <span>{{ block.settings.description | escape | newline_to_br }}</span>
+                                  {% endif %}
+                                </span>
+                                <span class="site-header__adv-image">
                                   {{
                                     block.settings.image
                                     | image_url: width: 800
@@ -107,9 +120,10 @@
                                       sizes: '(max-width: 600px) 100vw, 360px',
                                       alt: block.settings.image.alt
                                   }}
-                                </a>
-                              {% endif %}
-                          {% endcase %}
+                                </span>
+                              </a>
+                            {% endif %}
+                          {% endif %}
                         {% endfor %}
                       </div>
                     </aside>
@@ -156,58 +170,6 @@
   ],
   "blocks": [
     {
-      "type": "menu_promo",
-      "name": "t:general.menu_promo",
-      "limit": 3,
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:labels.image"
-        },
-        {
-          "type": "collection",
-          "id": "collection",
-          "label": "t:labels.menu_promo_collection"
-        },
-        {
-          "type": "text",
-          "id": "collection_handle",
-          "label": "t:labels.menu_promo_collection_handle",
-          "info": "t:labels.menu_promo_collection_handle_info"
-        },
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "t:labels.heading",
-          "default": "Featured collection"
-        },
-        {
-          "type": "textarea",
-          "id": "description",
-          "label": "t:labels.description",
-          "default": "Explore our latest products."
-        },
-        {
-          "type": "text",
-          "id": "link_label",
-          "label": "t:labels.button_label",
-          "default": "Shop now"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "t:labels.button_link"
-        },
-        {
-          "type": "color",
-          "id": "background",
-          "label": "t:labels.background",
-          "default": "#f5f5f7"
-        }
-      ]
-    },
-    {
       "type": "adv",
       "name": "t:general.adv",
       "settings": [
@@ -220,6 +182,16 @@
           "type": "url",
           "id": "link",
           "label": "t:labels.adv_link"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.adv_heading"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "t:labels.adv_description"
         }
       ]
     }

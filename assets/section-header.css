@@ -155,8 +155,12 @@
   gap: 40px;
 }
 
+.site-header__mega-layout--no-adv {
+  grid-template-columns: 1fr;
+}
+
 .site-header__category-panel,
-.site-header__promo-panel {
+.site-header__adv-panel {
   min-width: 0;
 }
 
@@ -194,20 +198,14 @@
   list-style: none;
 }
 
-.site-header__promo-panel h2 {
-  margin-bottom: 16px;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.site-header__promo-list {
+.site-header__adv-list {
   display: grid;
   gap: 16px;
 }
 
 .site-header__adv-card {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 46%);
   height: 128px;
   overflow: hidden;
   border-radius: 8px;
@@ -221,65 +219,41 @@
   transform: translateY(-2px);
 }
 
-.site-header__adv-card img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.site-header__promo-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(120px, 46%);
-  height: 128px;
-  overflow: hidden;
-  border-radius: 8px;
-  background: var(--promo-background, #f5f5f7);
-  transition: filter 160ms ease, transform 160ms ease;
-}
-
-.site-header__promo-card:not(:has(.site-header__promo-image)) {
-  grid-template-columns: 1fr;
-}
-
-.site-header__promo-card:hover,
-.site-header__promo-card:focus-visible {
-  filter: brightness(0.96);
-  transform: translateY(-2px);
-}
-
-.site-header__promo-copy {
+.site-header__adv-copy {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 6px;
+  min-width: 0;
   padding: 18px 12px 18px 16px;
 }
 
-.site-header__promo-copy strong {
+.site-header__adv-copy strong {
+  overflow: hidden;
   font-size: 16px;
   line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.site-header__promo-copy > span:not(.site-header__promo-link) {
+.site-header__adv-copy > span {
+  display: -webkit-box;
+  overflow: hidden;
   color: #6b6b6b;
   font-size: 12px;
   line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
-.site-header__promo-link {
-  color: #c42132;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.site-header__promo-image {
+.site-header__adv-image {
   min-width: 0;
   height: 128px;
   overflow: hidden;
 }
 
-.site-header__promo-image img {
+.site-header__adv-image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
