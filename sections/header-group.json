@@ -13,12 +13,49 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {
-        "style_product_menu_title": "Main Menu",
-        "menu_collections": ["new-arrival", "bundle-deals", "best-sellers"]
+      "blocks": {
+        "adv_CALzGm": {
+          "type": "adv",
+          "settings": {
+            "image": "shopify://shop_images/theme_cover_image.jpg",
+            "link": "shopify://collections/best-sellers",
+            "heading": "test best sellers collection",
+            "description": "test best sellers collection description"
+          }
+        },
+        "adv_NRLkLK": {
+          "type": "adv",
+          "settings": {
+            "image": "shopify://shop_images/RedragonRGBWirelessGamingMouseImpactEliteM913_1.webp",
+            "link": "shopify://products/test-2",
+            "heading": "test-2 product",
+            "description": "test-2 product description"
+          }
+        },
+        "adv_ybNn6y": {
+          "type": "adv",
+          "settings": {
+            "image": "shopify://shop_images/gift_card.jpg",
+            "link": "shopify://products/gift-card",
+            "heading": "test gift card",
+            "description": "test gift card description"
+          }
+        }
       },
-      "blocks": {},
-      "block_order": []
+      "block_order": [
+        "adv_CALzGm",
+        "adv_NRLkLK",
+        "adv_ybNn6y"
+      ],
+      "settings": {
+        "menu": "main-menu",
+        "style_product_menu_title": "Main Menu",
+        "menu_collections": [
+          "new-arrival",
+          "bundle-deals",
+          "best-sellers"
+        ]
+      }
     }
   },
   "order": [
