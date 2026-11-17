@@ -14,6 +14,7 @@
     "header": {
       "type": "header",
       "settings": {
+        "style_product_menu_title": "Main Menu",
         "menu_collections": ["new-arrival", "bundle-deals", "best-sellers"]
       },
       "blocks": {
