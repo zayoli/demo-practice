@@ -2,6 +2,7 @@
 <script src="{{ 'section-product.js' | asset_url }}" defer></script>
 
 {% assign youtube_video_url = product.metafields.custom.youtube_video.value | strip %}
+{% assign product_features = product.metafields.custom.product_detail_image_and_text.value %}
 {% if youtube_video_url != blank %}
   <link rel="stylesheet" href="{{ 'vidstack-theme.css' | asset_url }}">
   <link rel="stylesheet" href="{{ 'vidstack-video.css' | asset_url }}">
@@ -32,7 +33,7 @@
       {{- 'product.open_selection' | t -}}
     </a>
     <div class="product-page__details">
-      <nav class="product-page__detail-nav" aria-label="{{ 'product.product_information' | t | escape }}">
+      <nav class="product-page__detail-nav" aria-label="{{ 'product.product_information' | t | escape }}" data-product-detail-tabs>
         {% if product.description != blank -%}
           <a href="#ProductOverview-{{ section.id }}">{{ 'product.overview' | t }}</a>
         {%- endif %}
@@ -53,6 +54,9 @@
         id="ProductDetails-{{ section.id }}"
         aria-labelledby="ProductDetailsTitle-{{ section.id }}"
       >
+        {% for feature in product_features %}
+          {% render 'product-feature', feature: feature %}
+        {% endfor %}
         <h2 id="ProductDetailsTitle-{{ section.id }}">{{ 'product.details' | t }}</h2>
         <dl>
           <div>
@@ -75,7 +79,12 @@
             {% for option in product.options_with_values %}
               <div>
                 <dt>{{ option.name | escape }}</dt>
-                <dd>{{ option.values | join: ', ' | escape }}</dd>
+                <dd>
+                  {% for option_value in option.values %}
+                    {{- option_value.name | escape -}}
+                    {%- unless forloop.last %}, {% endunless -%}
+                  {% endfor %}
+                </dd>
               </div>
             {% endfor %}
           {% endunless %}

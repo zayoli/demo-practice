@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="{{ 'section-product-recommendations.css' | asset_url }}">
+<script src="{{ 'section-product-recommendations.js' | asset_url }}" defer></script>
+
+<product-recommendations
+  class="product-recommendations"
+  {% unless recommendations.performed? %}
+    data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&amp;product_id={{ product.id }}&amp;limit={{ section.settings.products_to_show }}&amp;intent=related"
+  {% endunless %}
+>
+  {% if recommendations.performed? and recommendations.products_count > 0 %}
+    <section data-recommendation-content aria-labelledby="ProductRecommendations-{{ section.id }}">
+      <h2 id="ProductRecommendations-{{ section.id }}">{{ 'product.related' | t }}</h2>
+      <ul class="product-recommendations__grid" role="list">
+        {% for recommended_product in recommendations.products %}
+          <li>
+            <a class="product-recommendations__card" href="{{ recommended_product.url | escape }}">
+              <span class="product-recommendations__image">
+                {% if recommended_product.featured_image != blank %}
+                  {{
+                    recommended_product.featured_image
+                    | image_url: width: 640
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '180, 320, 480, 640',
+                      sizes: '(min-width: 1200px) 310px, (min-width: 750px) 23vw, 44vw',
+                      alt: ''
+                  }}
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag }}
+                {% endif %}
+              </span>
+              <h3>{{ recommended_product.title | escape }}</h3>
+              <span class="product-recommendations__price">
+                {% if recommended_product.price_varies %}
+                  {% assign minimum_price = recommended_product.price_min | money_with_currency %}
+                  {{ 'product.price_from' | t: price: minimum_price }}
+                {% else %}
+                  {{ recommended_product.price | money_with_currency }}
+                {% endif %}
+              </span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "t:general.product_recommendations",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:labels.product_recommendation_limit",
+      "min": 2,
+      "max": 8,
+      "step": 2,
+      "default": 4
+    }
+  ],
+  "presets": [{ "name": "t:general.product_recommendations" }]
+}
+{% endschema %}

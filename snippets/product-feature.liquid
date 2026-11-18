@@ -1,0 +1,58 @@
+{% doc %}
+  Renders a product feature from a referenced image and text metaobject.
+
+  @param {metaobject} feature - The product feature entry.
+{% enddoc %}
+
+{% liquid
+  assign feature_image = feature.image.value
+  assign feature_image = feature_image.preview_image | default: feature_image
+  assign feature_heading = feature.head.value
+  assign feature_description = feature.description
+  assign button_label = feature.button_label.value
+  assign button_link = feature.button_link.value
+  assign background_color = feature.background_color.value | default: '#000000'
+  assign white_contrast = background_color | color_contrast: '#ffffff'
+  assign has_button = false
+  if button_label != blank and button_link != blank
+    assign has_button = true
+  endif
+  assign has_copy = false
+  if feature_heading != blank or feature_description.value != blank or has_button
+    assign has_copy = true
+  endif
+%}
+
+{% if feature_image != blank or has_copy %}
+  <div
+    class="product-feature{% if feature_image == blank or has_copy == false %} product-feature--single-column{% elsif feature.direction.value == true %} product-feature--image-right{% endif %}{% if white_contrast < 4.5 %} product-feature--dark-text{% endif %}"
+    style="--product-feature-background: {{ background_color | escape }};"
+  >
+    {% if feature_image != blank %}
+      <div class="product-feature__media">
+        {{
+          feature_image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'lazy',
+            widths: '360, 540, 720, 960, 1200, 1400',
+            sizes: '(min-width: 1400px) 600px, (min-width: 900px) 45vw, calc(100vw - 40px)',
+            alt: feature_image.alt
+        }}
+      </div>
+    {% endif %}
+    {% if has_copy %}
+      <div class="product-feature__copy">
+        {% if feature_heading != blank %}
+          <h3>{{ feature_heading | escape }}</h3>
+        {% endif %}
+        {% if feature_description.value != blank %}
+          <div class="product-page__rte">{{ feature_description | metafield_tag }}</div>
+        {% endif %}
+        {% if has_button %}
+          <a class="product-feature__button" href="{{ button_link | escape }}">{{ button_label | escape }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
