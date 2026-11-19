@@ -1,0 +1,26 @@
+{% doc %}
+  Renders one product accordion item from a product metaobject reference.
+
+  @param {metaobject} item - The accordion item.
+{% enddoc %}
+
+{% liquid
+  assign item_heading = item.heading.value | default: item.title.value
+  assign item_content = item.content
+  if item_content == blank
+    assign item_content = item.description
+  endif
+  assign item_is_open = item.is_default_open.value | default: item.open_by_default.value
+%}
+
+{% if item_heading != blank and item_content != blank %}
+  <details class="product-accordion__item" {% if item_is_open == true %}open{% endif %}>
+    <summary class="product-accordion__summary">
+      <span>{{ item_heading | escape }}</span>
+      <span class="product-accordion__icon" aria-hidden="true"></span>
+    </summary>
+    <div class="product-accordion__content product-page__rte">
+      {{ item_content | metafield_tag }}
+    </div>
+  </details>
+{% endif %}

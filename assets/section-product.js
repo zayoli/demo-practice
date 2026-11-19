@@ -64,6 +64,21 @@ if (!customElements.get('product-detail')) {
             else input.stepDown();
             this.updateQuantityButtons();
           }
+          if (event.target.closest('[data-product-anchor-add]'))
+            this.querySelector('.product-info__add')?.click();
+          if (event.target.closest('[data-product-anchor-buy]'))
+            this.querySelector('.shopify-payment-button__button')?.click();
+          const anchor = event.target.closest('.product-anchor a[href^="#"]');
+          if (anchor) {
+            const target = this.querySelector(anchor.getAttribute('href'));
+            const navigation = this.querySelector('.product-anchor');
+            if (target && navigation) {
+              event.preventDefault();
+              const top = target.getBoundingClientRect().top + window.scrollY - navigation.offsetHeight - 16;
+              window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+              history.replaceState(null, '', anchor.href);
+            }
+          }
           const zoom = event.target.closest('[data-product-zoom]');
           if (
             zoom &&
@@ -172,70 +187,11 @@ if (!customElements.get('product-detail')) {
         options
       );
       this.enhanceInfo();
-      this.initializeDetailTabs(options);
       this.querySelectorAll('[data-product-description] img').forEach(
         (image) => {
           image.loading = 'lazy';
         }
       );
-    }
-
-    initializeDetailTabs(options) {
-      const navigation = this.querySelector('[data-product-detail-tabs]');
-      const tabs = [...navigation.querySelectorAll('a')];
-      if (tabs.length < 2) return;
-
-      const panels = tabs.map((tab) => document.getElementById(tab.hash.slice(1)));
-      if (panels.some((panel) => !panel)) return;
-
-      const activate = (activeIndex) => {
-        tabs.forEach((tab, index) => {
-          const selected = index === activeIndex;
-          tab.setAttribute('aria-selected', String(selected));
-          tab.tabIndex = selected ? 0 : -1;
-          panels[index].hidden = !selected;
-        });
-      };
-
-      navigation.setAttribute('role', 'tablist');
-      tabs.forEach((tab, index) => {
-        const panel = panels[index];
-        tab.id = panel.id + '-tab';
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-controls', panel.id);
-        panel.setAttribute('role', 'tabpanel');
-        panel.setAttribute('aria-labelledby', tab.id);
-        panel.tabIndex = 0;
-
-        tab.addEventListener('click', (event) => {
-          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-          event.preventDefault();
-          activate(index);
-        }, options);
-        tab.addEventListener('keydown', (event) => {
-          const destinations = {
-            ArrowLeft: (index - 1 + tabs.length) % tabs.length,
-            ArrowRight: (index + 1) % tabs.length,
-            Home: 0,
-            End: tabs.length - 1,
-            ' ': index
-          };
-          if (!Object.hasOwn(destinations, event.key)) return;
-          event.preventDefault();
-          const nextIndex = destinations[event.key];
-          activate(nextIndex);
-          tabs[nextIndex].focus();
-        }, options);
-      });
-
-      const activateFromHash = () => {
-        const index = tabs.findIndex((tab) => tab.hash === location.hash);
-        if (index >= 0) activate(index);
-      };
-
-      activate(0);
-      activateFromHash();
-      window.addEventListener('hashchange', activateFromHash, options);
     }
 
     enhanceInfo() {

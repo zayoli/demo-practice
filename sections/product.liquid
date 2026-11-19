@@ -3,6 +3,25 @@
 
 {% assign youtube_video_url = product.metafields.custom.youtube_video.value | strip %}
 {% assign product_features = product.metafields.custom.product_detail_image_and_text.value %}
+{% assign product_overview = product.metafields.custom.product_overview %}
+{% assign product_accordion_items = product.metafields.custom.product_accordion.value %}
+{% assign specifications_anchor = 'ProductDetails-' | append: section.id %}
+{% if product_accordion_items != blank %}
+  {% assign specifications_anchor = 'ProductAccordion-' | append: section.id %}
+{% endif %}
+{% assign anchor_variant = product.selected_or_first_available_variant %}
+{% assign anchor_can_purchase = false %}
+{% if anchor_variant.available %}
+  {% unless product.requires_selling_plan %}
+    {% assign anchor_can_purchase = true %}
+  {% endunless %}
+{% endif %}
+{% assign has_product_overview = false %}
+{% if product_overview != blank and product_overview.value != blank %}
+  {% assign has_product_overview = true %}
+{% elsif product.description != blank %}
+  {% assign has_product_overview = true %}
+{% endif %}
 {% if youtube_video_url != blank %}
   <link rel="stylesheet" href="{{ 'vidstack-theme.css' | asset_url }}">
   <link rel="stylesheet" href="{{ 'vidstack-video.css' | asset_url }}">
@@ -28,67 +47,60 @@
       {% render 'product-gallery', product: product, section_id: section.id %}
       {% render 'product-info', product: product, section: section %}
     </div>
+    <nav class="product-anchor" aria-label="{{ 'product.product_information' | t | escape }}">
+      <div class="product-anchor__inner">
+        <p class="product-anchor__title">{{ product.title | escape }}</p>
+        <div class="product-anchor__links">
+          {% if has_product_overview %}
+            <a href="#ProductOverview-{{ section.id }}">{{ 'product.overview' | t }}</a>
+          {% endif %}
+          <a href="#{{ specifications_anchor }}">{{ 'product.details' | t }}</a>
+        </div>
+        <div class="product-anchor__actions">
+          <button type="button" class="product-anchor__add" data-product-anchor-add>
+            {{ 'top_picks.add_to_cart' | t }}
+          </button>
+          {% if section.settings.show_dynamic_checkout and anchor_can_purchase %}
+            <button type="button" class="product-anchor__buy" data-product-anchor-buy>
+              {{ 'product.buy_now' | t }}
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
     <div class="product-page__request" role="status" aria-live="polite" hidden data-product-status></div>
     <a class="product-page__retry" href="{{ product.url }}" hidden data-product-retry>
       {{- 'product.open_selection' | t -}}
     </a>
     <div class="product-page__details">
-      <nav class="product-page__detail-nav" aria-label="{{ 'product.product_information' | t | escape }}" data-product-detail-tabs>
-        {% if product.description != blank -%}
-          <a href="#ProductOverview-{{ section.id }}">{{ 'product.overview' | t }}</a>
-        {%- endif %}
-        <a href="#ProductDetails-{{ section.id }}">{{ 'product.details' | t }}</a>
-      </nav>
-      {% if product.description != blank %}
-        <section
-          class="product-page__overview"
-          id="ProductOverview-{{ section.id }}"
-          aria-labelledby="ProductOverviewTitle-{{ section.id }}"
-        >
-          <h2 id="ProductOverviewTitle-{{ section.id }}">{{ 'product.overview' | t }}</h2>
-          <div class="product-page__rte" data-product-description>{{ product.description }}</div>
-        </section>
-      {% endif %}
       <section
         class="product-page__specifications"
         id="ProductDetails-{{ section.id }}"
-        aria-labelledby="ProductDetailsTitle-{{ section.id }}"
       >
         {% for feature in product_features %}
           {% render 'product-feature', feature: feature %}
         {% endfor %}
-        <h2 id="ProductDetailsTitle-{{ section.id }}">{{ 'product.details' | t }}</h2>
-        <dl>
-          <div>
-            <dt>{{ 'product.product_name' | t }}</dt>
-            <dd>{{ product.title | escape }}</dd>
-          </div>
-          {% if product.vendor != blank %}
-            <div>
-              <dt>{{ 'product.brand' | t }}</dt>
-              <dd>{{ product.vendor | escape }}</dd>
-            </div>
-          {% endif %}
-          {% if product.type != blank %}
-            <div>
-              <dt>{{ 'product.category' | t }}</dt>
-              <dd>{{ product.type | escape }}</dd>
-            </div>
-          {% endif %}
-          {% unless product.has_only_default_variant %}
-            {% for option in product.options_with_values %}
-              <div>
-                <dt>{{ option.name | escape }}</dt>
-                <dd>
-                  {% for option_value in option.values %}
-                    {{- option_value.name | escape -}}
-                    {%- unless forloop.last %}, {% endunless -%}
-                  {% endfor %}
-                </dd>
-              </div>
+        {% if has_product_overview %}
+          <section
+            class="product-page__overview"
+            id="ProductOverview-{{ section.id }}"
+            aria-labelledby="ProductOverviewTitle-{{ section.id }}"
+          >
+            <h2 id="ProductOverviewTitle-{{ section.id }}">{{ 'product.overview' | t }}</h2>
+            {% if product_overview != blank and product_overview.value != blank %}
+              <div class="product-page__rte" data-product-description>{{ product_overview | metafield_tag }}</div>
+            {% elsif product.description != blank %}
+              <div class="product-page__rte" data-product-description>{{ product.description }}</div>
+            {% endif %}
+          </section>
+        {% endif %}
+        {% if product_accordion_items != blank %}
+          <div class="product-accordion" id="ProductAccordion-{{ section.id }}" data-product-accordion>
+            {% for accordion_item in product_accordion_items %}
+              {% render 'product-accordion-item', item: accordion_item %}
             {% endfor %}
-          {% endunless %}
-        </dl>
+          </div>
+        {% endif %}
       </section>
     </div>
     {% if youtube_video_url != blank %}
