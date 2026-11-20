@@ -84,7 +84,9 @@
           aria-label="{{ 'slideshow.previous' | t | escape }}"
           hidden
         >
-          ‹
+          <svg class="product-gallery__arrow-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="m12.5 5-5 5 5 5" />
+          </svg>
         </button>
         <button
           class="product-gallery__arrow product-gallery__arrow--next"
@@ -94,7 +96,9 @@
           aria-label="{{ 'slideshow.next' | t | escape }}"
           hidden
         >
-          ›
+          <svg class="product-gallery__arrow-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="m7.5 5 5 5-5 5" />
+          </svg>
         </button>
       {% endif %}
     </div>
