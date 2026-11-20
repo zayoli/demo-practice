@@ -23,7 +23,7 @@
           "type": "category",
           "settings": {
             "title": "Best Sellers",
-            "collection": "",
+            "collection": "best-sellers",
             "products": [],
             "example_group": "best_sellers"
           }
@@ -32,7 +32,7 @@
           "type": "category",
           "settings": {
             "title": "New Arrivals",
-            "collection": "",
+            "collection": "new-arrival",
             "products": [],
             "example_group": "new_arrivals"
           }
@@ -41,7 +41,7 @@
           "type": "category",
           "settings": {
             "title": "Bundle Deals",
-            "collection": "",
+            "collection": "bundle-deals",
             "products": [],
             "example_group": "bundle_deals"
           }
