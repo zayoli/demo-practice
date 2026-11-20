@@ -1,69 +1,150 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "banner_primary": {
       "type": "slideshow",
-      "settings": {
-        "autoplay": true,
-        "interval": 5,
-        "speed": 600,
-        "mobile_ratio": "3 / 4"
-      },
       "blocks": {
         "sale": {
           "type": "slide",
           "settings": {
             "title": "Black Friday sale",
-            "example_image": "sale",
             "alt": "Black Friday gaming gear sale, up to 60% off.",
-            "link": "/collections/all"
+            "link": "/collections/all",
+            "example_image": "sale"
           }
         },
         "collection": {
           "type": "slide",
           "settings": {
             "title": "Gaming gear collection",
-            "example_image": "collection",
             "alt": "Explore the Redragon gaming gear collection.",
-            "link": "/collections/all"
+            "link": "/collections/all",
+            "example_image": "collection"
           }
         },
         "keyboard": {
           "type": "slide",
           "settings": {
             "title": "EISA K768 PRO",
-            "example_image": "keyboard",
             "alt": "Discover the EISA K768 PRO gaming keyboard.",
-            "link": "/collections/all"
+            "link": "/collections/all",
+            "example_image": "keyboard"
           }
         }
       },
-      "block_order": ["sale", "collection", "keyboard"]
+      "block_order": [
+        "sale",
+        "collection",
+        "keyboard"
+      ],
+      "settings": {
+        "heading": "",
+        "autoplay": true,
+        "interval": 5,
+        "speed": 600,
+        "mobile_ratio": "3 / 4"
+      }
     },
     "banner_secondary": {
       "type": "top-picks",
+      "blocks": {
+        "best_sellers": {
+          "type": "category",
+          "settings": {
+            "title": "Best Sellers",
+            "collection": "best-sellers",
+            "products": [],
+            "example_group": "none"
+          }
+        },
+        "new_arrivals": {
+          "type": "category",
+          "settings": {
+            "title": "New Arrivals",
+            "collection": "new-arrival",
+            "products": [],
+            "example_group": "none"
+          }
+        },
+        "bundle_deals": {
+          "type": "category",
+          "settings": {
+            "title": "Bundle Deals",
+            "collection": "bundle-deals",
+            "products": [],
+            "example_group": "none"
+          }
+        }
+      },
+      "block_order": [
+        "best_sellers",
+        "new_arrivals",
+        "bundle_deals"
+      ],
       "settings": {
         "heading": "Top Picks For You",
         "promotion": "",
         "product_limit": 8
-      },
-      "blocks": {
-        "best_sellers": { "type": "category", "settings": { "title": "Best Sellers", "collection": "best-sellers" } },
-        "new_arrivals": { "type": "category", "settings": { "title": "New Arrivals", "collection": "new-arrival" } },
-        "bundle_deals": { "type": "category", "settings": { "title": "Bundle Deals", "collection": "bundle-deals" } }
-      },
-      "block_order": ["best_sellers", "new_arrivals", "bundle_deals"]
+      }
     },
     "why_choose": {
       "type": "why-choose",
-      "settings": { "heading": "Why Choose Redragon" },
       "blocks": {
-        "shipping": { "type": "benefit", "settings": { "icon": "shipping", "title": "Free U.S.\nEconomy Shipping", "description": "Orders over $49 qualify for free shipping. Track your parcel anytime." } },
-        "returns": { "type": "benefit", "settings": { "icon": "returns", "title": "30-Day\nReturn Policy", "description": "Return your order within 30 days." } },
-        "warranty": { "type": "benefit", "settings": { "icon": "warranty", "title": "2-Year\nLimited Warranty", "description": "Only available on redragonshop." } },
-        "rewards": { "type": "benefit", "settings": { "icon": "rewards", "title": "Enjoy Your\nRedragon Perks", "description": "Join Redragon Reward Program and enjoy exclusive deals and rewards." } }
+        "shipping": {
+          "type": "benefit",
+          "settings": {
+            "icon": "shipping",
+            "title": "Free U.S.\nEconomy Shipping",
+            "description": "Orders over $49 qualify for free shipping. Track your parcel anytime."
+          }
+        },
+        "returns": {
+          "type": "benefit",
+          "settings": {
+            "icon": "returns",
+            "title": "30-Day\nReturn Policy",
+            "description": "Return your order within 30 days."
+          }
+        },
+        "warranty": {
+          "type": "benefit",
+          "settings": {
+            "icon": "warranty",
+            "title": "2-Year\nLimited Warranty",
+            "description": "Only available on redragonshop."
+          }
+        },
+        "rewards": {
+          "type": "benefit",
+          "settings": {
+            "icon": "rewards",
+            "title": "Enjoy Your\nRedragon Perks",
+            "description": "Join Redragon Reward Program and enjoy exclusive deals and rewards."
+          }
+        }
       },
-      "block_order": ["shipping", "returns", "warranty", "rewards"]
+      "block_order": [
+        "shipping",
+        "returns",
+        "warranty",
+        "rewards"
+      ],
+      "settings": {
+        "heading": "Why Choose Redragon"
+      }
     }
   },
-  "order": ["banner_primary", "banner_secondary", "why_choose"]
+  "order": [
+    "banner_primary",
+    "banner_secondary",
+    "why_choose"
+  ]
 }

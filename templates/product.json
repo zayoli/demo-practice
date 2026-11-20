@@ -11,15 +11,57 @@
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "settings": {
+        "show_dynamic_checkout": true,
+        "show_payment_icons": true
+      }
     },
-    "related": {
-      "type": "product-recommendations",
-      "settings": {}
+    "top_picks_jdJWke": {
+      "type": "top-picks",
+      "blocks": {
+        "category_PHRikr": {
+          "type": "category",
+          "settings": {
+            "title": "Best Sellers",
+            "collection": "",
+            "products": [],
+            "example_group": "best_sellers"
+          }
+        },
+        "category_wcq9WL": {
+          "type": "category",
+          "settings": {
+            "title": "New Arrivals",
+            "collection": "",
+            "products": [],
+            "example_group": "new_arrivals"
+          }
+        },
+        "category_zcRjxr": {
+          "type": "category",
+          "settings": {
+            "title": "Bundle Deals",
+            "collection": "",
+            "products": [],
+            "example_group": "bundle_deals"
+          }
+        }
+      },
+      "block_order": [
+        "category_PHRikr",
+        "category_wcq9WL",
+        "category_zcRjxr"
+      ],
+      "name": "t:general.top_picks",
+      "settings": {
+        "heading": "You  May Be Interested",
+        "promotion": "",
+        "product_limit": 12
+      }
     }
   },
   "order": [
     "main",
-    "related"
+    "top_picks_jdJWke"
   ]
 }
